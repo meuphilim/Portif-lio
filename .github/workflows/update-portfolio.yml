@@ -1,0 +1,50 @@
+name: Atualizar Portfólio
+
+on:
+  schedule:
+    # Executa a cada 12 horas (às 00:00 e 12:00 UTC)
+    - cron: '0 0,12 * * *'
+  
+  # Permite executar manualmente a partir da interface do GitHub
+  workflow_dispatch:
+
+jobs:
+  update-portfolio:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v3
+      
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Instalar dependências
+        run: npm ci || npm install
+      
+      - name: Gerar portfólio atualizado
+        run: node update_catalog.js
+        env:
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Verificar alterações
+        id: verify_changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit e push das alterações
+        if: steps.verify_changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "chore: atualizar portfólio automaticamente [skip ci]"
+          git push
