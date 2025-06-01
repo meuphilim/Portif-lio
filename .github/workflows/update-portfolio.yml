@@ -28,8 +28,8 @@ jobs:
       - name: Gerar portfólio atualizado
         run: node update_catalog.js
         env:
-          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Verificar alterações
         id: verify_changes
