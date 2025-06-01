@@ -21,29 +21,45 @@ interface ApiResponse {
   repos: Repository[]
   error?: string
   message?: string
+  auth?: string
 }
 
 export default function Portfolio() {
   const [repos, setRepos] = useState<Repository[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [authStatus, setAuthStatus] = useState<string | null>(null)
 
   const GITHUB_USERNAME = process.env.NEXT_PUBLIC_GITHUB_USERNAME || "meuphilim"
 
   useEffect(() => {
     async function fetchRepos() {
       try {
-        const response = await fetch("/api/github-repos")
+        console.log("🔍 Buscando repositórios...")
+
+        // Adicionar timestamp para evitar cache
+        const timestamp = new Date().getTime()
+        const response = await fetch(`/api/github-repos?_=${timestamp}`)
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          console.error(`❌ API error: ${response.status} ${response.statusText}`)
+          console.error(`Response body: ${errorText}`)
+          throw new Error(`Erro na API: ${response.status} ${response.statusText}`)
+        }
+
         const data: ApiResponse = await response.json()
+        console.log("📊 Resposta da API:", data)
 
         if (data.success) {
           setRepos(data.repos)
+          setAuthStatus(data.auth || "unknown")
         } else {
           setError(data.error || "Erro ao carregar repositórios")
         }
       } catch (err) {
-        setError("Erro de conexão")
-        console.error("Erro:", err)
+        console.error("❌ Erro:", err)
+        setError(err instanceof Error ? err.message : "Erro de conexão")
       } finally {
         setLoading(false)
       }
@@ -92,10 +108,16 @@ export default function Portfolio() {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
           <div className="text-red-500 text-6xl mb-4">❌</div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Erro ao carregar</h2>
-          <p className="text-gray-600">{error}</p>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+          >
+            Tentar novamente
+          </button>
         </div>
       </div>
     )
@@ -106,11 +128,11 @@ export default function Portfolio() {
       {/* Header */}
       <header className="bg-blue-600 text-white py-8">
         <div className="container mx-auto px-4">
-          <div className="flex items-center space-x-6">
+          <div className="flex flex-col md:flex-row md:items-center md:space-x-6">
             <img
               src={`https://github.com/${GITHUB_USERNAME}.png?size=120`}
               alt={`${GITHUB_USERNAME} avatar`}
-              className="w-20 h-20 rounded-full border-4 border-white"
+              className="w-20 h-20 rounded-full border-4 border-white mb-4 md:mb-0"
             />
             <div>
               <h1 className="text-3xl font-bold">Olá, eu sou {GITHUB_USERNAME}!</h1>
@@ -132,6 +154,21 @@ export default function Portfolio() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Status da API */}
+        {authStatus && (
+          <div
+            className={`mb-4 p-2 text-sm rounded-md ${
+              authStatus === "token" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+            }`}
+          >
+            <p>
+              {authStatus === "token"
+                ? "✅ Usando API autenticada do GitHub"
+                : "⚠️ Usando API pública do GitHub (limite de requisições reduzido)"}
+            </p>
+          </div>
+        )}
+
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg p-6 shadow-sm border">
@@ -157,7 +194,7 @@ export default function Portfolio() {
           <h2 className="text-2xl font-bold text-gray-800 mb-6">🚀 Meus Projetos</h2>
 
           {repos.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="text-center py-12 bg-white rounded-lg shadow-sm border">
               <div className="text-6xl mb-4">🔍</div>
               <h3 className="text-xl font-semibold text-gray-700 mb-2">Nenhum projeto encontrado</h3>
               <p className="text-gray-500">Os projetos aparecerão aqui assim que forem detectados.</p>

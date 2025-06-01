@@ -263,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
   await fs.writeFile(path.join(BUILD_ASSETS_JS_DIR, "script.js"), defaultJS)
 }
 
+// Atualizar a função fetchRepositories para lidar com erros de autenticação
 async function fetchRepositories() {
   console.log(`🔍 Buscando repositórios de @${GITHUB_USERNAME}...`)
 
@@ -286,8 +287,10 @@ async function fetchRepositories() {
     Accept: "application/vnd.github.v3+json",
   }
 
-  if (GITHUB_TOKEN) {
-    headers.Authorization = `token ${GITHUB_TOKEN}`
+  let useToken = false
+  if (GITHUB_TOKEN && GITHUB_TOKEN.trim() !== "") {
+    headers.Authorization = `Bearer ${GITHUB_TOKEN}`
+    useToken = true
     console.log("🔑 Usando autenticação com token")
   } else {
     console.log("⚠️ Sem token - usando API pública (limitada)")
@@ -303,7 +306,31 @@ async function fetchRepositories() {
 
       const response = await fetch(url, { headers })
 
+      // Se houver erro de autenticação e estamos usando token, tentar novamente sem token
+      if ((response.status === 401 || response.status === 403) && useToken) {
+        console.log("⚠️ Erro de autenticação. Tentando novamente sem token...")
+        delete headers.Authorization
+        useToken = false
+
+        const retryResponse = await fetch(url, { headers })
+        if (!retryResponse.ok) {
+          throw new Error(`GitHub API error: ${retryResponse.status} ${retryResponse.statusText}`)
+        }
+
+        const repos = await retryResponse.json()
+        if (repos.length === 0) break
+
+        allRepos = allRepos.concat(repos)
+        page++
+
+        if (repos.length < REPOS_PER_PAGE) break
+        continue
+      }
+
       if (!response.ok) {
+        const errorText = await response.text()
+        console.error(`❌ GitHub API error: ${response.status} ${response.statusText}`)
+        console.error(`Response: ${errorText}`)
         throw new Error(`GitHub API error: ${response.status} ${response.statusText}`)
       }
 
@@ -322,7 +349,18 @@ async function fetchRepositories() {
     return allRepos
   } catch (error) {
     console.error("❌ Erro ao buscar repositórios:", error.message)
-    throw error
+
+    // Se temos um cache antigo, usar como fallback
+    try {
+      console.log("🔄 Tentando usar cache como fallback...")
+      const cachedData = await fs.readFile(CACHE_FILE, "utf8")
+      const cachedRepos = JSON.parse(cachedData)
+      console.log(`📦 Usando ${cachedRepos.length} repositórios do cache como fallback`)
+      return cachedRepos
+    } catch (cacheError) {
+      console.error("❌ Não foi possível usar cache como fallback:", cacheError.message)
+      throw error
+    }
   }
 }
 
