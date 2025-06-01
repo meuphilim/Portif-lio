@@ -27,7 +27,7 @@ Este projeto gera automaticamente um portfólio web estático profissional a par
 
 ### 2. Configuração Local
 
-```bash
+\`\`\`bash
 # Clone o repositório
 git clone https://github.com/seu-usuario/portfolio-generator.git
 cd portfolio-generator
@@ -38,17 +38,17 @@ npm install
 # Configure as variáveis de ambiente
 cp .env.example .env
 # Edite o arquivo .env com suas informações
-```
+\`\`\`
 
 ### 3. Executar Localmente
 
-```bash
+\`\`\`bash
 # Gerar o portfólio
 npm run build
 
 # Ou para desenvolvimento local com servidor
 npm run dev
-```
+\`\`\`
 
 ## 🌐 Acesso ao Portfólio
 
@@ -60,7 +60,7 @@ Após o deploy no Vercel, seu portfólio estará disponível em:
 
 ## 📁 Estrutura do Projeto
 
-```
+\`\`\`
 portfolio-generator/
 ├── api/                    # API Routes do Vercel
 │   ├── generate.js        # Endpoint principal
@@ -74,7 +74,7 @@ portfolio-generator/
 ├── update_catalog.js      # Script principal
 ├── vercel.json           # Configuração do Vercel
 └── package.json
-```
+\`\`\`
 
 ## 🎨 Personalização
 
@@ -86,7 +86,7 @@ portfolio-generator/
 
 ### Variáveis CSS Disponíveis
 
-```css
+\`\`\`css
 :root {
   --primary-color: #007bff;      /* Cor principal */
   --secondary-color: #6c757d;    /* Cor secundária */
@@ -96,7 +96,7 @@ portfolio-generator/
   --text-color: #343a40;         /* Cor do texto */
   --border-color: #e9ecef;       /* Cor das bordas */
 }
-```
+\`\`\`
 
 ## 🔧 Configuração Avançada
 
