@@ -599,6 +599,7 @@ async function main() {
     console.log(`🚀 Iniciando gerador de portfólio para @${GITHUB_USERNAME}...`)
     console.log(`📍 Ambiente: ${isVercel ? "Vercel" : "Local"}`)
     console.log(`📁 Diretório de trabalho: ${process.cwd()}`)
+    console.log(`📂 Diretório de build: ${BUILD_DIR}`)
 
     if (typeof fetch === "undefined") {
       console.error("❌ Este script requer Node.js 18+ com fetch nativo")
@@ -619,8 +620,22 @@ async function main() {
     console.log("✅ Portfólio gerado com sucesso!")
     console.log(`📁 Arquivos gerados em: ${BUILD_DIR}`)
 
+    // Verificar se os arquivos foram criados
+    try {
+      const indexExists = await fs
+        .access(BUILD_INDEX_HTML_PATH)
+        .then(() => true)
+        .catch(() => false)
+      console.log(`📄 index.html existe: ${indexExists}`)
+
+      const buildContents = await fs.readdir(BUILD_DIR)
+      console.log(`📂 Conteúdo do build:`, buildContents)
+    } catch (error) {
+      console.warn("⚠️ Erro ao verificar arquivos:", error.message)
+    }
+
     if (!isVercel) {
-      console.log("🌐 Para publicar no GitHub Pages, configure a pasta 'build' como fonte.")
+      console.log("🌐 Para GitHub Pages, os arquivos estão prontos na pasta 'build'.")
     }
   } catch (error) {
     console.error("❌ Erro:", error.message)
