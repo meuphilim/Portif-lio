@@ -1,9 +1,17 @@
 {
   "version": 2,
-  "builds": [{ "src": "api/generate.js", "use": "@vercel/node" }],
+  "builds": [
+    { "src": "api/generate.js", "use": "@vercel/node" },
+    { "src": "package.json", "use": "@vercel/static-build" }
+  ],
   "routes": [
     { "src": "/", "dest": "/api/generate.js" },
     { "src": "/assets/(.*)", "dest": "/api/assets/$1" },
     { "src": "/projects/(.*)", "dest": "/api/projects/$1" }
-  ]
+  ],
+  "functions": {
+    "api/generate.js": {
+      "maxDuration": 30
+    }
+  }
 }

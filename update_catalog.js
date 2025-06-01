@@ -589,7 +589,16 @@ async function generateDocumentation(repos) {
 
 async function main() {
   try {
+    // Verificar variáveis de ambiente obrigatórias
+    if (!GITHUB_USERNAME) {
+      console.error("❌ GITHUB_USERNAME não configurado")
+      console.error("Configure a variável de ambiente GITHUB_USERNAME")
+      process.exit(1)
+    }
+
     console.log(`🚀 Iniciando gerador de portfólio para @${GITHUB_USERNAME}...`)
+    console.log(`📍 Ambiente: ${isVercel ? "Vercel" : "Local"}`)
+    console.log(`📁 Diretório de trabalho: ${process.cwd()}`)
 
     if (typeof fetch === "undefined") {
       console.error("❌ Este script requer Node.js 18+ com fetch nativo")
@@ -609,7 +618,10 @@ async function main() {
 
     console.log("✅ Portfólio gerado com sucesso!")
     console.log(`📁 Arquivos gerados em: ${BUILD_DIR}`)
-    console.log("🌐 Para publicar no GitHub Pages, configure a pasta 'build' como fonte.")
+
+    if (!isVercel) {
+      console.log("🌐 Para publicar no GitHub Pages, configure a pasta 'build' como fonte.")
+    }
   } catch (error) {
     console.error("❌ Erro:", error.message)
     console.error("Stack trace:", error.stack)
