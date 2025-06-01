@@ -1,17 +1,19 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "api/generate.js", "use": "@vercel/node" },
-    { "src": "package.json", "use": "@vercel/static-build" }
-  ],
+  "builds": [{ "src": "package.json", "use": "@vercel/next" }],
   "routes": [
-    { "src": "/", "dest": "/api/generate.js" },
-    { "src": "/assets/(.*)", "dest": "/api/assets/$1" },
-    { "src": "/projects/(.*)", "dest": "/api/projects/$1" }
+    { "src": "/api/generate", "dest": "/api/generate.js" },
+    { "src": "/api/assets/(.*)", "dest": "/api/assets/$1" },
+    { "src": "/api/projects/(.*)", "dest": "/api/projects/$1" },
+    { "src": "/(.*)", "dest": "/$1" }
   ],
   "functions": {
     "api/generate.js": {
       "maxDuration": 30
     }
+  },
+  "env": {
+    "GITHUB_USERNAME": "meuphilim",
+    "NEXT_PUBLIC_GITHUB_USERNAME": "meuphilim"
   }
 }

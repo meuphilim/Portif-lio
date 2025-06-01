@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "export",
+  trailingSlash: true,
+  skipTrailingSlashRedirect: true,
+  distDir: "out",
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -8,10 +12,18 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
-    domains: ["github.com"],
   },
   env: {
-    NEXT_PUBLIC_GITHUB_USERNAME: process.env.GITHUB_USERNAME,
+    GITHUB_USERNAME: process.env.GITHUB_USERNAME || "meuphilim",
+    NEXT_PUBLIC_GITHUB_USERNAME: process.env.NEXT_PUBLIC_GITHUB_USERNAME || "meuphilim",
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "/api/:path*",
+      },
+    ]
   },
 }
 

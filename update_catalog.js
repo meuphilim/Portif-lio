@@ -5,10 +5,12 @@ import slugify from "slugify"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// No início do arquivo, após as importações, adicione uma verificação mais robusta:
-
-// Verificar se estamos no ambiente Vercel
+// Atualizar a detecção de ambiente para incluir a nova variável
 const isVercel = process.env.VERCEL === "1" || process.env.VERCEL === "true"
+const isGitHubActions = process.env.GITHUB_ACTIONS === "true"
+const isVercelWithGitHubActions = isVercel && isGitHubActions
+
+// Verificar se estamos no ambiente Vercel ou GitHub Actions
 const ROOT_DIR = isVercel ? "/tmp" : __dirname
 
 // Caminhos para o site do portfólio gerado
@@ -38,9 +40,23 @@ const CACHE_FILE = path.join(CACHE_DIR, "repos.json")
 const API_BASE = "https://api.github.com"
 const REPOS_PER_PAGE = 100
 
-// Variáveis de ambiente
-const GITHUB_USERNAME = process.env.GITHUB_USERNAME
+// Variáveis de ambiente com fallbacks
+const GITHUB_USERNAME = process.env.GITHUB_USERNAME || process.env.NEXT_PUBLIC_GITHUB_USERNAME || "meuphilim"
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
+
+console.log(
+  `🔧 Ambiente detectado: ${
+    isVercelWithGitHubActions
+      ? "Vercel + GitHub Actions"
+      : isVercel
+        ? "Vercel"
+        : isGitHubActions
+          ? "GitHub Actions"
+          : "Local"
+  }`,
+)
+console.log(`👤 Username: ${GITHUB_USERNAME}`)
+console.log(`🔑 Token configurado: ${GITHUB_TOKEN ? "Sim" : "Não"}`)
 
 // Emojis para linguagens
 const languageEmojis = {
@@ -272,6 +288,9 @@ async function fetchRepositories() {
 
   if (GITHUB_TOKEN) {
     headers.Authorization = `token ${GITHUB_TOKEN}`
+    console.log("🔑 Usando autenticação com token")
+  } else {
+    console.log("⚠️ Sem token - usando API pública (limitada)")
   }
 
   let allRepos = []
@@ -280,6 +299,8 @@ async function fetchRepositories() {
   try {
     while (true) {
       const url = `${API_BASE}/users/${GITHUB_USERNAME}/repos?per_page=${REPOS_PER_PAGE}&page=${page}&sort=updated`
+      console.log(`📡 Fazendo requisição: ${url}`)
+
       const response = await fetch(url, { headers })
 
       if (!response.ok) {
@@ -406,6 +427,10 @@ async function generatePortfolioIndex(repos) {
     <title>Meu Portfólio - ${GITHUB_USERNAME}</title>
     <link rel="stylesheet" href="./assets/css/style.css">
     <link rel="icon" href="https://github.githubassets.com/favicons/favicon.png">
+    <meta name="description" content="Portfólio de ${GITHUB_USERNAME} - Desenvolvedor apaixonado por criar soluções inovadoras">
+    <meta property="og:title" content="Portfólio - ${GITHUB_USERNAME}">
+    <meta property="og:description" content="Confira meus projetos e contribuições no GitHub">
+    <meta property="og:image" content="https://github.com/${GITHUB_USERNAME}.png?size=400">
 </head>
 <body>
     <header>
@@ -471,8 +496,6 @@ async function generatePortfolioIndex(repos) {
             <h2>📬 Contato</h2>
             <p>Sinta-se à vontade para entrar em contato comigo!</p>
             <ul>
-                <li><strong>Email:</strong> seu.email@example.com</li>
-                <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/seu-linkedin" target="_blank">Seu Perfil no LinkedIn</a></li>
                 <li><strong>GitHub:</strong> <a href="https://github.com/${GITHUB_USERNAME}" target="_blank">github.com/${GITHUB_USERNAME}</a></li>
             </ul>
         </section>
@@ -481,6 +504,7 @@ async function generatePortfolioIndex(repos) {
     <footer>
         <div class="container">
             <p>&copy; ${new Date().getFullYear()} ${GITHUB_USERNAME}. Feito com ❤️ e automação.</p>
+            <p><small>Atualizado automaticamente via GitHub Actions • Última atualização: ${new Date().toLocaleString("pt-BR")}</small></p>
         </div>
     </footer>
     <script src="./assets/js/script.js"></script>
@@ -589,15 +613,8 @@ async function generateDocumentation(repos) {
 
 async function main() {
   try {
-    // Verificar variáveis de ambiente obrigatórias
-    if (!GITHUB_USERNAME) {
-      console.error("❌ GITHUB_USERNAME não configurado")
-      console.error("Configure a variável de ambiente GITHUB_USERNAME")
-      process.exit(1)
-    }
-
     console.log(`🚀 Iniciando gerador de portfólio para @${GITHUB_USERNAME}...`)
-    console.log(`📍 Ambiente: ${isVercel ? "Vercel" : "Local"}`)
+    console.log(`📍 Ambiente: ${isVercel ? "Vercel" : isGitHubActions ? "GitHub Actions" : "Local"}`)
     console.log(`📁 Diretório de trabalho: ${process.cwd()}`)
     console.log(`📂 Diretório de build: ${BUILD_DIR}`)
 
@@ -634,9 +651,7 @@ async function main() {
       console.warn("⚠️ Erro ao verificar arquivos:", error.message)
     }
 
-    if (!isVercel) {
-      console.log("🌐 Para GitHub Pages, os arquivos estão prontos na pasta 'build'.")
-    }
+    console.log("🌐 Portfólio pronto para deploy!")
   } catch (error) {
     console.error("❌ Erro:", error.message)
     console.error("Stack trace:", error.stack)
