@@ -16,8 +16,5 @@
     "GITHUB_USERNAME": "meuphilim",
     "NEXT_PUBLIC_GITHUB_USERNAME": "meuphilim",
     "GITHUB_ACTIONS": "true"
-  },
-  "projectSettings": {
-    "framework": "nextjs"
   }
 }
