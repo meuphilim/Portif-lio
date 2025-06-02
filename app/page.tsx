@@ -24,59 +24,84 @@ interface ApiResponse {
   auth?: string
 }
 
+// Dados de fallback para quando a API não estiver disponível
+const FALLBACK_REPOS: Repository[] = [
+  {
+    id: 1,
+    name: "portfolio-generator",
+    description: "Gerador automático de portfólio GitHub com deploy automático",
+    html_url: "https://github.com/meuphilim/portfolio-generator",
+    homepage: null,
+    language: "TypeScript",
+    topics: ["portfolio", "github", "automation", "nextjs"],
+    updated_at: new Date().toISOString(),
+    stargazers_count: 0,
+    forks_count: 0,
+  },
+  {
+    id: 2,
+    name: "octomind",
+    description: "Sistema inteligente de automação para portfólios GitHub",
+    html_url: "https://github.com/meuphilim/octomind",
+    homepage: null,
+    language: "JavaScript",
+    topics: ["automation", "github-actions", "portfolio"],
+    updated_at: new Date().toISOString(),
+    stargazers_count: 0,
+    forks_count: 0,
+  },
+]
+
 export default function Portfolio() {
-  const [repos, setRepos] = useState<Repository[]>([])
+  const [repos, setRepos] = useState<Repository[]>(FALLBACK_REPOS)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [authStatus, setAuthStatus] = useState<string | null>(null)
-  const [diagnosticInfo, setDiagnosticInfo] = useState<string | null>(null)
+  const [authStatus, setAuthStatus] = useState<string | null>("fallback")
+  const [diagnosticInfo, setDiagnosticInfo] = useState<string | null>("Usando dados de exemplo")
 
   const GITHUB_USERNAME = process.env.NEXT_PUBLIC_GITHUB_USERNAME || "meuphilim"
 
   useEffect(() => {
     async function fetchRepos() {
       try {
-        console.log("🔍 Buscando repositórios...")
-        setDiagnosticInfo("Iniciando requisição à API...")
+        console.log("🔍 Tentando buscar repositórios...")
+        setDiagnosticInfo("Tentando conectar à API do GitHub...")
 
-        const timestamp = new Date().getTime()
-        const response = await fetch(`/api/github-repos?_=${timestamp}`)
-        setDiagnosticInfo(`Status da resposta: ${response.status} ${response.statusText}`)
+        // Tentar buscar dados reais da API
+        const response = await fetch(
+          `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`,
+          {
+            headers: {
+              "User-Agent": `${GITHUB_USERNAME}-portfolio`,
+              Accept: "application/vnd.github.v3+json",
+            },
+          },
+        )
 
-        if (!response.ok) {
-          const errorText = await response.text()
-          console.error(`❌ API error: ${response.status} ${response.statusText}`)
-          console.error(`Response body: ${errorText}`)
-          setDiagnosticInfo(`Erro na API: ${response.status} ${response.statusText}\n${errorText}`)
-          throw new Error(`Erro na API: ${response.status} ${response.statusText}`)
-        }
+        if (response.ok) {
+          const data = await response.json()
+          const filteredRepos = data.filter(
+            (repo: any) => !repo.fork && !repo.archived && !repo.private && repo.name && !repo.name.startsWith("."),
+          )
 
-        const data: ApiResponse = await response.json()
-        console.log("📊 Resposta da API:", data)
-        setDiagnosticInfo(`Dados recebidos: ${data.count} repositórios, autenticação: ${data.auth || "desconhecida"}`)
-
-        if (data.success) {
-          setRepos(data.repos)
-          setAuthStatus(data.auth || "unknown")
-
-          if (data.message) {
-            setDiagnosticInfo(data.message)
-          }
+          setRepos(filteredRepos)
+          setAuthStatus("public")
+          setDiagnosticInfo(`✅ Conectado à API do GitHub - ${filteredRepos.length} repositórios encontrados`)
         } else {
-          setError(data.error || "Erro ao carregar repositórios")
-          setDiagnosticInfo(`Erro reportado pela API: ${data.error}`)
+          throw new Error(`API GitHub retornou: ${response.status}`)
         }
       } catch (err) {
-        console.error("❌ Erro:", err)
-        setError(err instanceof Error ? err.message : "Erro de conexão")
-        setDiagnosticInfo(`Exceção capturada: ${err instanceof Error ? err.message : "Erro desconhecido"}`)
+        console.warn("⚠️ Não foi possível conectar à API do GitHub, usando dados de exemplo")
+        setError(null) // Não mostrar como erro, apenas usar fallback
+        setAuthStatus("fallback")
+        setDiagnosticInfo("⚠️ Usando dados de exemplo (não foi possível conectar à API do GitHub)")
       } finally {
         setLoading(false)
       }
     }
 
     fetchRepos()
-  }, [])
+  }, [GITHUB_USERNAME])
 
   const getLanguageEmoji = (language: string | null) => {
     const emojis: Record<string, string> = {
@@ -111,29 +136,6 @@ export default function Portfolio() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Carregando portfólio...</p>
           {diagnosticInfo && <p className="mt-2 text-xs text-gray-500 max-w-md mx-auto">{diagnosticInfo}</p>}
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-          <div className="text-red-500 text-6xl mb-4">❌</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Erro ao carregar</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          {diagnosticInfo && (
-            <div className="mb-4 p-3 bg-gray-100 rounded text-left">
-              <p className="text-xs text-gray-500 font-mono whitespace-pre-wrap">{diagnosticInfo}</p>
-            </div>
-          )}
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-          >
-            Tentar novamente
-          </button>
         </div>
       </div>
     )
@@ -305,17 +307,18 @@ export default function Portfolio() {
                   authStatus === "token"
                     ? "bg-green-100 text-green-800"
                     : authStatus === "fallback"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-yellow-100 text-yellow-800"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-blue-100 text-blue-800"
                 }`}
               >
                 {authStatus === "token"
                   ? "✅ Usando API autenticada do GitHub"
                   : authStatus === "fallback"
-                    ? "⚠️ Usando dados de exemplo (não foi possível conectar à API do GitHub)"
-                    : "⚠️ Usando API pública do GitHub (limite de requisições reduzido)"}
+                    ? "⚠️ Usando dados de exemplo (modo demonstração)"
+                    : "✅ Conectado à API pública do GitHub"}
               </div>
             )}
+            {diagnosticInfo && <div className="mt-2 text-xs text-gray-500 max-w-md mx-auto">{diagnosticInfo}</div>}
           </div>
         </div>
       </section>
@@ -366,83 +369,74 @@ export default function Portfolio() {
             Explore alguns dos meus trabalhos e contribuições de código aberto
           </p>
 
-          {repos.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">Nenhum projeto encontrado</h3>
-              <p className="text-gray-500">Os projetos aparecerão aqui assim que forem detectados.</p>
-              {diagnosticInfo && <p className="text-xs text-gray-400 mt-4 max-w-md mx-auto">{diagnosticInfo}</p>}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {repos.slice(0, 6).map((repo) => (
-                <div
-                  key={repo.id}
-                  className="bg-white rounded-lg shadow-md border hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                >
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-xl font-semibold text-gray-800 truncate">{repo.name}</h3>
-                      <div className="flex space-x-2 text-sm text-gray-500">
-                        <span className="flex items-center">⭐ {repo.stargazers_count}</span>
-                        <span className="flex items-center">🍴 {repo.forks_count}</span>
-                      </div>
-                    </div>
-
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                      {repo.description || "Sem descrição disponível."}
-                    </p>
-
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-lg">{getLanguageEmoji(repo.language)}</span>
-                        <span className="text-sm text-gray-600">{repo.language || "N/A"}</span>
-                      </div>
-                      <span className="text-xs text-gray-400">
-                        {new Date(repo.updated_at).toLocaleDateString("pt-BR")}
-                      </span>
-                    </div>
-
-                    {repo.topics && repo.topics.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {repo.topics.slice(0, 3).map((topic) => (
-                          <span key={topic} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                            {topic}
-                          </span>
-                        ))}
-                        {repo.topics.length > 3 && (
-                          <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                            +{repo.topics.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    <div className="flex space-x-2">
-                      <a
-                        href={repo.html_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 bg-blue-600 text-white text-center py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-                      >
-                        Ver Código
-                      </a>
-                      {repo.homepage && (
-                        <a
-                          href={repo.homepage}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 bg-gray-600 text-white text-center py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
-                        >
-                          Demo
-                        </a>
-                      )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {repos.slice(0, 6).map((repo) => (
+              <div
+                key={repo.id}
+                className="bg-white rounded-lg shadow-md border hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className="text-xl font-semibold text-gray-800 truncate">{repo.name}</h3>
+                    <div className="flex space-x-2 text-sm text-gray-500">
+                      <span className="flex items-center">⭐ {repo.stargazers_count}</span>
+                      <span className="flex items-center">🍴 {repo.forks_count}</span>
                     </div>
                   </div>
+
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                    {repo.description || "Sem descrição disponível."}
+                  </p>
+
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg">{getLanguageEmoji(repo.language)}</span>
+                      <span className="text-sm text-gray-600">{repo.language || "N/A"}</span>
+                    </div>
+                    <span className="text-xs text-gray-400">
+                      {new Date(repo.updated_at).toLocaleDateString("pt-BR")}
+                    </span>
+                  </div>
+
+                  {repo.topics && repo.topics.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {repo.topics.slice(0, 3).map((topic) => (
+                        <span key={topic} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                          {topic}
+                        </span>
+                      ))}
+                      {repo.topics.length > 3 && (
+                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                          +{repo.topics.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex space-x-2">
+                    <a
+                      href={repo.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 bg-blue-600 text-white text-center py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                    >
+                      Ver Código
+                    </a>
+                    {repo.homepage && (
+                      <a
+                        href={repo.homepage}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 bg-gray-600 text-white text-center py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
+                      >
+                        Demo
+                      </a>
+                    )}
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
 
           {repos.length > 6 && (
             <div className="text-center mt-12">
@@ -554,77 +548,67 @@ export default function Portfolio() {
             })()}
           </div>
 
-          {repos.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-gray-500">
-                As estatísticas de linguagens aparecerão aqui quando os repositórios forem carregados.
-              </p>
-            </div>
-          )}
-
           {/* Gráfico de barras visual */}
-          {repos.length > 0 && (
-            <div className="mt-12 max-w-4xl mx-auto">
-              <h4 className="text-xl font-semibold text-gray-800 mb-6 text-center">Distribuição Visual</h4>
-              <div className="bg-white rounded-lg p-6 shadow-md">
-                {(() => {
-                  const languageStats = repos.reduce(
-                    (acc, repo) => {
-                      const lang = repo.language || "Outros"
-                      acc[lang] = (acc[lang] || 0) + 1
-                      return acc
-                    },
-                    {} as Record<string, number>,
-                  )
+          <div className="mt-12 max-w-4xl mx-auto">
+            <h4 className="text-xl font-semibold text-gray-800 mb-6 text-center">Distribuição Visual</h4>
+            <div className="bg-white rounded-lg p-6 shadow-md">
+              {(() => {
+                const languageStats = repos.reduce(
+                  (acc, repo) => {
+                    const lang = repo.language || "Outros"
+                    acc[lang] = (acc[lang] || 0) + 1
+                    return acc
+                  },
+                  {} as Record<string, number>,
+                )
 
-                  const totalRepos = repos.length
-                  const sortedLanguages = Object.entries(languageStats)
-                    .sort(([, countA], [, countB]) => countB - countA)
-                    .slice(0, 6) // Top 6 para o gráfico
+                const totalRepos = repos.length
+                const sortedLanguages = Object.entries(languageStats)
+                  .sort(([, countA], [, countB]) => countB - countA)
+                  .slice(0, 6) // Top 6 para o gráfico
 
-                  const languageColors: Record<string, string> = {
-                    TypeScript: "59, 130, 246", // blue-500
-                    JavaScript: "245, 158, 11", // amber-500
-                    Python: "34, 197, 94", // green-500
-                    Java: "239, 68, 68", // red-500
-                    HTML: "249, 115, 22", // orange-500
-                    CSS: "168, 85, 247", // purple-500
-                    Shell: "132, 204, 22", // lime-500
-                    Go: "6, 182, 212", // cyan-500
-                    Rust: "115, 115, 115", // gray-500
-                    Outros: "156, 163, 175", // gray-400
-                  }
+                const languageColors: Record<string, string> = {
+                  TypeScript: "59, 130, 246", // blue-500
+                  JavaScript: "245, 158, 11", // amber-500
+                  Python: "34, 197, 94", // green-500
+                  Java: "239, 68, 68", // red-500
+                  HTML: "249, 115, 22", // orange-500
+                  CSS: "168, 85, 247", // purple-500
+                  Shell: "132, 204, 22", // lime-500
+                  Go: "6, 182, 212", // cyan-500
+                  Rust: "115, 115, 115", // gray-500
+                  Outros: "156, 163, 175", // gray-400
+                }
 
-                  return (
-                    <div className="space-y-4">
-                      {sortedLanguages.map(([language, count]) => {
-                        const percentage = (count / totalRepos) * 100
-                        const color = languageColors[language] || languageColors.Outros
+                return (
+                  <div className="space-y-4">
+                    {sortedLanguages.map(([language, count]) => {
+                      const percentage = (count / totalRepos) * 100
+                      const color = languageColors[language] || languageColors.Outros
 
-                        return (
-                          <div key={language} className="flex items-center">
-                            <div className="w-20 text-sm font-medium text-gray-700 text-right mr-4">{language}</div>
-                            <div className="flex-1 bg-gray-200 rounded-full h-4 relative overflow-hidden">
-                              <div
-                                className="h-full rounded-full transition-all duration-1000 ease-out"
-                                style={{
-                                  width: `${percentage}%`,
-                                  backgroundColor: `rgb(${color})`,
-                                }}
-                              />
-                            </div>
-                            <div className="w-16 text-sm text-gray-600 text-left ml-4">
-                              {count} ({Math.round(percentage)}%)
-                            </div>
+                      return (
+                        <div key={language} className="flex items-center">
+                          <div className="w-20 text-sm font-medium text-gray-700 text-right mr-4">{language}</div>
+                          <div className="flex-1 bg-gray-200 rounded-full h-4 relative overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all duration-1000 ease-out"
+                              style={{
+                                width: `${percentage}%`,
+                                backgroundColor: `rgb(${color})`,
+                              }}
+                            />
                           </div>
-                        )
-                      })}
-                    </div>
-                  )
-                })()}
-              </div>
+                          <div className="w-16 text-sm text-gray-600 text-left ml-4">
+                            {count} ({Math.round(percentage)}%)
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })()}
             </div>
-          )}
+          </div>
         </div>
       </section>
 
@@ -704,7 +688,8 @@ export default function Portfolio() {
               <h2 className="text-4xl font-bold text-gray-800">Projeto OctoMind</h2>
             </div>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Sistema inteligente de automação que mantém este portfólio sempre atualizado com os repositórios mais recentes
+              Sistema inteligente de automação que mantém este portfólio sempre atualizado com os repositórios mais
+              recentes
             </p>
           </div>
 
@@ -804,7 +789,7 @@ export default function Portfolio() {
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Status da API</span>
                   <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                    {authStatus === "token" ? "Autenticada" : "Pública"}
+                    {authStatus === "token" ? "Autenticada" : authStatus === "public" ? "Pública" : "Demonstração"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
@@ -828,8 +813,8 @@ export default function Portfolio() {
             <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-8 text-white">
               <h3 className="text-2xl font-bold mb-4">Interessado no OctoMind?</h3>
               <p className="text-purple-100 mb-6 max-w-2xl mx-auto">
-                Este sistema pode ser adaptado para automatizar seu próprio portfólio. 
-                Confira o código-fonte e documentação completa no GitHub.
+                Este sistema pode ser adaptado para automatizar seu próprio portfólio. Confira o código-fonte e
+                documentação completa no GitHub.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <a
