@@ -1,6 +1,6 @@
 # 🚀 Portfólio GitHub Automatizado
 
-Um site de portfólio moderno e responsivo que gera e atualiza automaticamente a partir dos seus repositórios GitHub usando pipelines de CI/CD. **Totalmente em português brasileiro (pt-BR)**.
+Um site de portfólio moderno e responsivo que gera e atualiza automaticamente a partir dos seus repositórios GitHub usando GitHub Actions e deploy no GitHub Pages. **Totalmente em português brasileiro (pt-BR)**.
 
 ## ✨ Funcionalidades
 
@@ -8,7 +8,7 @@ Um site de portfólio moderno e responsivo que gera e atualiza automaticamente a
 - 🎨 **Design responsivo** com UI/UX moderna
 - 📈 **Estatísticas de linguagens** com gráficos visuais
 - 🔄 **Atualizações automáticas** a cada 12 horas via GitHub Actions
-- 🌐 **Deploy duplo** para GitHub Pages e Vercel
+- 🌐 **Deploy automático** para GitHub Pages
 - 🏷️ **Exibição de badges e tópicos** dos repositórios
 - 🔗 **Links para demos ao vivo** quando disponíveis
 - 🛡️ **Tratamento de erros** com dados de fallback
@@ -41,7 +41,7 @@ lib/
 - **Framework**: Next.js 14 com App Router
 - **Linguagem**: TypeScript
 - **Estilização**: Tailwind CSS
-- **Deploy**: Vercel + GitHub Pages
+- **Deploy**: GitHub Pages
 - **CI/CD**: GitHub Actions
 - **API**: GitHub REST API v3
 - **Idioma**: Português Brasileiro (pt-BR)
@@ -51,8 +51,8 @@ lib/
 ### 1. Clonar e Instalar
 
 \`\`\`bash
-git clone https://github.com/seuusuario/portfolio-github.git
-cd portfolio-github
+git clone https://github.com/meuphilim/Portifolio.git
+cd Portifolio
 npm ci
 \`\`\`
 
@@ -73,8 +73,7 @@ npm run dev
 ### 4. Build e Deploy
 
 \`\`\`bash
-npm run build  # Build para produção
-npm run start  # Iniciar servidor de produção
+npm run build  # Build para produção (GitHub Pages)
 \`\`\`
 
 ## ⚙️ Configuração
@@ -86,37 +85,24 @@ npm run start  # Iniciar servidor de produção
 | `GITHUB_USERNAME` | Seu nome de usuário do GitHub | ✅ |
 | `NEXT_PUBLIC_GITHUB_USERNAME` | Nome de usuário público do GitHub | ✅ |
 | `GITHUB_TOKEN` | Token de Acesso Pessoal do GitHub | ⚠️ Recomendado |
-| `VERCEL_TOKEN` | Token de deploy do Vercel | 🔧 Para CI/CD |
-| `VERCEL_ORG_ID` | ID da organização Vercel | 🔧 Para CI/CD |
-| `VERCEL_PROJECT_ID` | ID do projeto Vercel | 🔧 Para CI/CD |
 
 ### Secrets do Repositório GitHub
 
 Configure estes nas configurações do seu repositório em **Settings > Secrets and variables > Actions**:
 
+- `GITHUB_USERNAME`: Seu nome de usuário do GitHub
 - `GITHUB_TOKEN`: Token de acesso pessoal com escopo `public_repo`
-- `VERCEL_TOKEN`: Token da API do Vercel
-- `VERCEL_ORG_ID`: ID da sua organização Vercel
-- `VERCEL_PROJECT_ID`: ID do seu projeto Vercel
 
-## 🔄 Workflows Automatizados
+## 🔄 Workflow Automatizado
 
-### 1. Integração Contínua (`ci.yml`)
-- **Gatilhos**: Push para main/develop, Pull requests
-- **Ações**: Lint, verificação de tipos, validação de build, testes
+### Deploy GitHub Pages (`deploy.yml`)
+- **Gatilhos**: 
+  - Push para main
+  - Pull requests para main
+  - A cada 12 horas (agendado)
+  - Manual via workflow_dispatch
+- **Ações**: Build Next.js + Deploy para GitHub Pages
 - **Duração**: ~3-5 minutos
-- **Idioma**: Português brasileiro
-
-### 2. Deploy Vercel (`deploy-vercel.yml`)
-- **Gatilhos**: Push para main (excluindo docs)
-- **Ações**: Build e deploy para produção Vercel
-- **Duração**: ~2-3 minutos
-- **Idioma**: Português brasileiro
-
-### 3. Atualizações Agendadas (`scheduled-update.yml`)
-- **Gatilhos**: A cada 12 horas (00:00, 12:00 UTC)
-- **Ações**: Atualizar dados do portfólio, deploy para GitHub Pages
-- **Duração**: ~2-3 minutos
 - **Idioma**: Português brasileiro
 
 ## 📊 Estrutura do Projeto
@@ -125,22 +111,22 @@ Configure estes nas configurações do seu repositório em **Settings > Secrets 
 portfolio-github/
 ├── 📁 .github/workflows/     # Workflows do GitHub Actions (pt-BR)
 ├── 📁 app/                   # Next.js App Router
-│   ├── 📁 api/              # Rotas da API (pt-BR)
+│   ├── 📁 api/              # Rotas da API (removidas para GitHub Pages)
 │   ├── 📄 layout.tsx        # Layout raiz (pt-BR)
 │   ├── 📄 page.tsx          # Página principal (pt-BR)
 │   └── 📄 globals.css       # Estilos globais
 ├── 📁 lib/                   # Bibliotecas e utilitários
 │   ├── 📄 i18n.ts           # Configuração de internacionalização
-│   └── 📁 messages/         # Mensagens traduzidas
+│   └── 📄 imageLoader.js    # Loader de imagens para export estático
 ├── 📁 scripts/              # Scripts utilitários (pt-BR)
 ├── 📁 docs/                 # Documentação (pt-BR)
 ├── 📄 .env.example          # Template de variáveis de ambiente
 ├── 📄 .gitignore           # Regras do Git ignore
-├── 📄 next.config.js       # Configuração do Next.js
+├── 📄 next.config.js       # Configuração do Next.js (GitHub Pages)
 ├── 📄 package.json         # Dependências e scripts (pt-BR)
 ├── 📄 tailwind.config.js   # Configuração do Tailwind CSS
 ├── 📄 tsconfig.json        # Configuração do TypeScript
-└── 📄 vercel.json          # Configuração de deploy Vercel
+└── 📄 DEPLOYMENT.md        # Guia de deploy para GitHub Pages
 \`\`\`
 
 ## 🔧 Desenvolvimento
@@ -149,7 +135,7 @@ portfolio-github/
 
 \`\`\`bash
 npm run dev          # Iniciar servidor de desenvolvimento
-npm run build        # Build para produção
+npm run build        # Build para produção (GitHub Pages)
 npm run start        # Iniciar servidor de produção
 npm run lint         # Executar ESLint
 npm run lint:fix     # Corrigir problemas do ESLint
@@ -172,19 +158,17 @@ npm test             # Executar testes
 
 ### Deploy Automático
 
-O projeto faz deploy automaticamente para ambas as plataformas:
+O projeto faz deploy automaticamente para GitHub Pages:
 
-1. **GitHub Pages**: Site estático em `https://seuusuario.github.io/portfolio-github`
-2. **Vercel**: Site dinâmico em `https://portfolio-github-seuusuario.vercel.app`
+1. **GitHub Pages**: Site estático em `https://meuphilim.github.io/Portifolio`
 
 ### Deploy Manual
 
 \`\`\`bash
-# Deploy para Vercel
-npx vercel --prod
-
 # Gerar site estático
-npm run gerar
+npm run build
+
+# Os arquivos serão gerados em ./out/
 \`\`\`
 
 ## 🛡️ Tratamento de Erros
@@ -234,14 +218,14 @@ Se você encontrar algum problema:
 
 1. Verifique os [logs do GitHub Actions](../../actions)
 2. Verifique suas variáveis de ambiente
-3. Revise os [logs de deploy do Vercel](https://vercel.com/dashboard)
+3. Revise a [documentação de deploy](DEPLOYMENT.md)
 4. Abra uma issue **em português** com informações detalhadas
 
 ## 🙏 Agradecimentos
 
 - [Next.js](https://nextjs.org/) pelo framework incrível
-- [Vercel](https://vercel.com/) pelo deploy sem complicações
 - [GitHub](https://github.com/) pela API poderosa e Actions
+- [GitHub Pages](https://pages.github.com/) pelo hosting gratuito
 - [Tailwind CSS](https://tailwindcss.com/) pela estilização utility-first
 
 ## 🎯 Roadmap
@@ -265,19 +249,16 @@ Se você encontrar algum problema:
 
 ## 📚 Documentação Adicional
 
+- [Guia de Deploy](DEPLOYMENT.md)
 - [Guia de Configuração](docs/CONFIGURACAO.md)
-- [Guia de Deploy](docs/DEPLOYMENT.md)
 - [Guia de Contribuição](docs/CONTRIBUICAO.md)
 - [Solução de Problemas](docs/SOLUCAO-PROBLEMAS.md)
-- [Referência da API](docs/API.md)
 
 ## 🌟 Showcase
 
 Veja exemplos de portfólios criados com este template:
 
-- [Exemplo 1](https://portfolio-exemplo1.vercel.app)
-- [Exemplo 2](https://portfolio-exemplo2.vercel.app)
-- [Exemplo 3](https://portfolio-exemplo3.vercel.app)
+- [Portfólio Principal](https://meuphilim.github.io/Portifolio)
 
 ## 📊 Estatísticas
 
@@ -286,6 +267,7 @@ Veja exemplos de portfólios criados com este template:
 ![GitHub issues](https://img.shields.io/github/issues/meuphilim/Portifolio)
 ![GitHub license](https://img.shields.io/github/license/meuphilim/Portifolio)
 ![Idioma](https://img.shields.io/badge/Idioma-Português%20BR-green)
+![Deploy](https://img.shields.io/github/deployments/meuphilim/Portifolio/github-pages?label=GitHub%20Pages)
 
 ---
 
@@ -293,4 +275,5 @@ Veja exemplos de portfólios criados com este template:
   <p>Feito com ❤️ por <a href="https://github.com/meuphilim">@meuphilim</a></p>
   <p>Se este projeto te ajudou, considere dar uma ⭐!</p>
   <p><strong>🇧🇷 Orgulhosamente desenvolvido em português brasileiro</strong></p>
+  <p><strong>🌐 Deploy automático via GitHub Pages</strong></p>
 </div>

@@ -1,11 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Configuração para export estático
+  // Configuração para export estático (GitHub Pages)
   output: "export",
 
-  // Desabilitar otimizações que podem causar problemas no export
+  // Configurações específicas para GitHub Pages
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
+
+  // Base path para GitHub Pages (se necessário)
+  basePath: process.env.NODE_ENV === "production" ? "/Portifolio" : "",
+  assetPrefix: process.env.NODE_ENV === "production" ? "/Portifolio/" : "",
 
   // Configurações de imagem para export estático
   images: {
@@ -27,7 +31,7 @@ const nextConfig = {
     ignoreDuringBuilds: false,
   },
 
-  // Headers de segurança
+  // Headers de segurança (não aplicáveis no GitHub Pages, mas mantidos para referência)
   async headers() {
     return [
       {
@@ -50,14 +54,9 @@ const nextConfig = {
     ]
   },
 
-  // Configurações experimentais removidas para evitar conflitos
-  experimental: {
-    // Removido para compatibilidade com export estático
-  },
-
   // Configurações de webpack
   webpack: (config, { isServer }) => {
-    // Configurações específicas para o build
+    // Configurações específicas para o build estático
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -69,6 +68,9 @@ const nextConfig = {
 
     return config
   },
+
+  // Configurações experimentais removidas para compatibilidade
+  experimental: {},
 }
 
 module.exports = nextConfig

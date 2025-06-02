@@ -1,63 +1,35 @@
-# 🚀 Guia de Deploy - Portfólio GitHub
+# 🚀 Guia de Deploy - GitHub Pages
 
 ## 📋 Configuração Completa ✅
 
 ### 1. Variáveis de Ambiente Configuradas
 
 **GitHub Repository Secrets:**
-- `GITHUB_TOKEN`: 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 ✅
-- `VERCEL_TOKEN`: prj_O5sixObkLh6DGfIIUFJ5ZIFUZd2O ✅
-- `VERCEL_ORG_ID`: meuphilims-projects ✅
-- `VERCEL_PROJECT_ID`: prj_O5sixObkLh6DGfIIUFJ5ZIFUZd2O ✅
-
-**Vercel Environment Variables:**
 - `GITHUB_USERNAME`: meuphilim ✅
-- `NEXT_PUBLIC_GITHUB_USERNAME`: meuphilim ✅
 - `GITHUB_TOKEN`: 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 ✅
-- `GITHUB_ACTIONS`: true ✅
 
-## 🎯 URLs de Deploy
+**Environment Variables (Automáticas):**
+- `GITHUB_USERNAME`: Configurado via secrets ou repository owner
+- `NEXT_PUBLIC_GITHUB_USERNAME`: Configurado automaticamente
+- `GITHUB_TOKEN`: Token para acesso à API do GitHub
 
-### 1. 🌐 Vercel (Aplicação Next.js)
-- **URL**: `https://prj-o5sixobklh6dgfiifuj5zifuzd2o.vercel.app`
-- **Tipo**: Aplicação dinâmica com API routes
-- **Deploy**: Automático via GitHub Actions + Vercel CLI
+## 🎯 URL de Deploy
 
-### 2. 📄 GitHub Pages (Site Estático)
-- **URL**: `https://meuphilim.github.io/seu-repo`
-- **Tipo**: Site estático HTML/CSS/JS
+### 🌐 GitHub Pages (Site Estático)
+- **URL**: `https://meuphilim.github.io/Portifolio`
+- **Tipo**: Site estático Next.js exportado
 - **Deploy**: Automático via GitHub Actions
 
-## 🔄 Workflows Configurados
+## 🔄 Workflow Configurado
 
-### 1. `pages.yml` - GitHub Pages
-- **Trigger**: Push na branch `main`
-- **Função**: Gera site estático e faz deploy no GitHub Pages
-- **Duração**: ~2-3 minutos
-- **Status**: ✅ Configurado
-
-### 2. `update-portfolio.yml` - Atualização Automática
-- **Trigger**: A cada 12 horas (00:00 e 12:00 UTC)
-- **Função**: Atualiza dados dos repositórios e faz deploy em ambas plataformas
-- **Duração**: ~3-4 minutos
-- **Status**: ✅ Configurado
-
-### 3. `deploy-vercel-production.yml` - Vercel Production
-- **Trigger**: Push na branch `main`
-- **Função**: Deploy direto para Vercel em produção
-- **Duração**: ~2-3 minutos
-- **Status**: ✅ Configurado
-
-### 4. `vercel-deploy.yml` - Deploy Vercel Completo
-- **Trigger**: Push/PR na branch `main`
-- **Função**: Build Next.js + Deploy para Vercel
-- **Duração**: ~2-3 minutos
-- **Status**: ✅ Configurado
-
-### 5. `test-environments.yml` - Testes
-- **Trigger**: Manual ou diário às 6h UTC
-- **Função**: Testa geração estática e endpoints da API
-- **Duração**: ~1-2 minutos
+### `deploy.yml` - GitHub Pages Deploy
+- **Trigger**: 
+  - Push na branch `main`
+  - Pull requests para `main`
+  - Schedule: A cada 12 horas (00:00 e 12:00 UTC)
+  - Manual via `workflow_dispatch`
+- **Função**: Build Next.js + Deploy para GitHub Pages
+- **Duração**: ~3-5 minutos
 - **Status**: ✅ Configurado
 
 ## 🚀 Processo de Deploy
@@ -70,27 +42,27 @@ git commit -m "feat: nova funcionalidade"
 git push origin main
 
 # Isso irá:
-# 1. Fazer build do Next.js
-# 2. Deploy para Vercel
-# 3. Gerar site estático
-# 4. Deploy para GitHub Pages
+# 1. Fazer build do Next.js (export estático)
+# 2. Deploy para GitHub Pages
+# 3. Atualizar dados dos repositórios
 \`\`\`
 
 ### 2. Deploy Manual
 \`\`\`bash
 # Via GitHub Actions (manual)
-# 1. Ir para: https://github.com/meuphilim/seu-repo/actions
-# 2. Selecionar workflow desejado
+# 1. Ir para: https://github.com/meuphilim/Portifolio/actions
+# 2. Selecionar workflow "Deploy to GitHub Pages"
 # 3. Clicar em "Run workflow"
 
-# Via Vercel CLI (local)
-npx vercel --prod
+# Via linha de comando (local)
+npm run build
+# Arquivos gerados em ./out/
 \`\`\`
 
 ### 3. Monitoramento
-- **GitHub Actions**: `https://github.com/meuphilim/seu-repo/actions`
-- **Vercel Dashboard**: `https://vercel.com/meuphilims-projects/prj_O5sixObkLh6DGfIIUFJ5ZIFUZd2O`
+- **GitHub Actions**: `https://github.com/meuphilim/Portifolio/actions`
 - **GitHub Pages**: Settings > Pages
+- **Site ao vivo**: `https://meuphilim.github.io/Portifolio`
 
 ## 🔧 Comandos Úteis
 
@@ -103,28 +75,13 @@ npm install
 npm run dev
 
 # Gerar site estático
-npm run generate
-
-# Build Next.js
 npm run build
-\`\`\`
 
-### Vercel CLI
-\`\`\`bash
-# Login no Vercel
-npx vercel login
+# Gerar dados do portfólio
+npm run gerar
 
-# Link do projeto
-npx vercel link
-
-# Deploy preview
-npx vercel
-
-# Deploy production
-npx vercel --prod
-
-# Ver logs
-npx vercel logs
+# Limpar arquivos de build
+npm run limpar
 \`\`\`
 
 ### GitHub CLI
@@ -139,62 +96,95 @@ gh run list
 gh run view [RUN_ID] --log
 
 # Executar workflow manualmente
-gh workflow run "Deploy Vercel Production"
+gh workflow run "Deploy to GitHub Pages"
 \`\`\`
 
 ## 📊 Status dos Deploys
 
 ### ✅ Funcionando
 - [x] Geração de site estático
-- [x] API Routes do Next.js
-- [x] GitHub Actions workflows
+- [x] GitHub Actions workflow
 - [x] Variáveis de ambiente
-- [x] IDs do Vercel configurados
-- [x] Tokens de autenticação
-- [x] Deploy automático
+- [x] Deploy automático para GitHub Pages
+- [x] Atualização automática de dados
+- [x] Fallback para dados de exemplo
 
 ### 🎯 Próximos Passos
-- [ ] Primeiro deploy completo
-- [ ] Teste de atualização automática
 - [ ] Configuração de domínio personalizado
 - [ ] Configuração de analytics
+- [ ] Otimizações de performance
+- [ ] Implementação de PWA
 
 ## 🔧 Troubleshooting
 
-### ❌ Erro: "VERCEL_ORG_ID not found"
-**Status**: ✅ Resolvido - ID configurado: `meuphilims-projects`
-
-### ❌ Erro: "VERCEL_PROJECT_ID not found"
-**Status**: ✅ Resolvido - ID configurado: `prj_O5sixObkLh6DGfIIUFJ5ZIFUZd2O`
+### ❌ Erro: "GitHub Pages build failed"
+**Solução**: 
+1. Verificar logs no GitHub Actions
+2. Verificar se o arquivo `.nojekyll` existe
+3. Verificar se o diretório `out` foi gerado corretamente
 
 ### ❌ Erro: "GitHub API rate limit"
-**Status**: ✅ Resolvido - Token configurado com fallback para API pública
+**Solução**: 
+1. Configurar `GITHUB_TOKEN` nos secrets
+2. O sistema usa fallback automático para dados de exemplo
 
 ### ❌ Erro: "Build directory not found"
-**Solução**: Verificar se `node update_catalog.js` está executando sem erros
+**Solução**: 
+1. Verificar se `node update_catalog.js` está executando sem erros
+2. Verificar se as dependências estão instaladas
 
 ### ❌ Erro: "Permission denied"
-**Solução**: Verificar permissões do workflow em Settings > Actions > General
+**Solução**: 
+1. Verificar permissões do workflow em Settings > Actions > General
+2. Verificar se GitHub Pages está habilitado
 
 ## 📞 Suporte
 
 Em caso de problemas:
 1. ✅ Verificar logs no GitHub Actions
 2. ✅ Verificar configuração das variáveis
-3. ✅ Testar geração local: `npm run generate`
+3. ✅ Testar build local: `npm run build`
 4. ✅ Verificar status da API GitHub: `https://www.githubstatus.com/`
-5. ✅ Verificar dashboard do Vercel
+5. ✅ Verificar configurações do GitHub Pages
 
 ## 🎉 Configuração Completa!
 
 Todas as configurações necessárias foram aplicadas:
 - ✅ Secrets do GitHub configurados
-- ✅ Variáveis do Vercel configuradas
-- ✅ IDs do projeto configurados
-- ✅ Workflows atualizados
+- ✅ Workflow do GitHub Actions configurado
+- ✅ Next.js configurado para export estático
+- ✅ GitHub Pages habilitado
 - ✅ Fallbacks implementados
 
-O projeto está pronto para o primeiro deploy!
-\`\`\`
+O projeto está pronto para deploy no GitHub Pages!
 
-Vamos criar um script de verificação para testar se tudo está funcionando:
+## 🌐 Configuração do GitHub Pages
+
+### Passos para Habilitar GitHub Pages:
+
+1. **Ir para Settings do Repositório**
+   - Acesse: `https://github.com/meuphilim/Portifolio/settings`
+
+2. **Configurar Pages**
+   - Vá para a seção "Pages" no menu lateral
+   - Source: "GitHub Actions"
+   - Branch: Não aplicável (usando GitHub Actions)
+
+3. **Verificar Deploy**
+   - Após o primeiro push, verificar em Actions
+   - Site estará disponível em: `https://meuphilim.github.io/Portifolio`
+
+### Domínio Personalizado (Opcional):
+
+Para configurar um domínio personalizado:
+
+1. **Adicionar CNAME**
+   - Criar arquivo `CNAME` na raiz do repositório
+   - Conteúdo: `seudominio.com`
+
+2. **Configurar DNS**
+   - Apontar CNAME para `meuphilim.github.io`
+
+3. **Habilitar HTTPS**
+   - GitHub Pages habilita automaticamente
+\`\`\`

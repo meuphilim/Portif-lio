@@ -2,7 +2,7 @@ const { execSync } = require("child_process")
 const fs = require("fs")
 const path = require("path")
 
-console.log("🚀 Iniciando build do portfólio...")
+console.log("🚀 Iniciando build para GitHub Pages...")
 
 function runCommand(command, options = {}) {
   try {
@@ -44,20 +44,16 @@ async function main() {
 
     // 3. Limpar diretórios anteriores
     console.log("🧹 Limpando arquivos anteriores...")
-    if (fs.existsSync("out")) {
-      if (process.platform === "win32") {
-        runCommand("rmdir /s /q out")
-      } else {
-        runCommand("rm -rf out")
+    const dirsToClean = ["out", ".next", "build"]
+    dirsToClean.forEach((dir) => {
+      if (fs.existsSync(dir)) {
+        if (process.platform === "win32") {
+          runCommandSafe(`rmdir /s /q ${dir}`)
+        } else {
+          runCommandSafe(`rm -rf ${dir}`)
+        }
       }
-    }
-    if (fs.existsSync(".next")) {
-      if (process.platform === "win32") {
-        runCommand("rmdir /s /q .next")
-      } else {
-        runCommand("rm -rf .next")
-      }
-    }
+    })
 
     // 4. Verificar e instalar dependências se necessário
     if (!fs.existsSync("node_modules")) {
@@ -84,19 +80,15 @@ async function main() {
       console.warn("⚠️ Aviso: Não foi possível atualizar o catálogo, usando dados de fallback")
     }
 
-    // 7. Verificar se temos um package.json válido para Next.js
-    const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"))
-    if (!packageJson.dependencies || !packageJson.dependencies.next) {
-      console.log("📦 Adicionando Next.js às dependências...")
-      runCommand("npm install next@latest react@latest react-dom@latest")
-    }
+    // 7. Executar build do Next.js
+    console.log("🔨 Executando build do Next.js para GitHub Pages...")
 
-    // 8. Executar build do Next.js com diferentes estratégias
-    console.log("🔨 Executando build do Next.js...")
+    // Definir variáveis de ambiente para produção
+    process.env.NODE_ENV = "production"
 
-    let buildSuccess = false
     const buildCommands = ["npx next build", "npm run build", "./node_modules/.bin/next build"]
 
+    let buildSuccess = false
     for (const cmd of buildCommands) {
       try {
         console.log(`🔄 Tentando: ${cmd}`)
@@ -113,15 +105,23 @@ async function main() {
       throw new Error("Todos os comandos de build falharam")
     }
 
-    // 9. Verificar se o diretório out foi criado
+    // 8. Verificar se o diretório out foi criado
     if (!fs.existsSync("out")) {
       throw new Error('Diretório "out" não foi criado pelo build')
     }
 
-    // 10. Criar arquivo .nojekyll para GitHub Pages
+    // 9. Criar arquivo .nojekyll para GitHub Pages
     const nojekyllPath = path.join("out", ".nojekyll")
     fs.writeFileSync(nojekyllPath, "")
     console.log("📝 Arquivo .nojekyll criado")
+
+    // 10. Criar arquivo CNAME se necessário (para domínio personalizado)
+    const customDomain = process.env.CUSTOM_DOMAIN
+    if (customDomain) {
+      const cnamePath = path.join("out", "CNAME")
+      fs.writeFileSync(cnamePath, customDomain)
+      console.log(`📝 Arquivo CNAME criado para: ${customDomain}`)
+    }
 
     // 11. Verificar arquivos essenciais
     const essentialFiles = ["index.html"]
@@ -133,15 +133,17 @@ async function main() {
     }
 
     // 12. Criar arquivo de verificação
+    const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"))
     const buildInfo = {
       timestamp: new Date().toISOString(),
       version: packageJson.version || "2.0.0",
       node_version: process.version,
-      build_type: "static_export",
-      environment: process.env.NODE_ENV || "production",
+      build_type: "github_pages_static",
+      environment: "production",
       github_username: process.env.GITHUB_USERNAME || process.env.NEXT_PUBLIC_GITHUB_USERNAME || "meuphilim",
       platform: process.platform,
       arch: process.arch,
+      repository: packageJson.homepage || "https://meuphilim.github.io/Portifolio",
     }
 
     fs.writeFileSync(path.join("out", "build-info.json"), JSON.stringify(buildInfo, null, 2))
@@ -157,7 +159,7 @@ async function main() {
       console.log(`  ${type} ${item}${size}`)
     })
 
-    console.log("✅ Build concluído com sucesso!")
+    console.log("✅ Build para GitHub Pages concluído com sucesso!")
     console.log('📁 Arquivos gerados no diretório "out"')
 
     // 14. Mostrar estatísticas do build
@@ -177,6 +179,14 @@ async function main() {
     console.log(`✅ Diretório out existe: ${fs.existsSync("out")}`)
     console.log(`✅ index.html existe: ${fs.existsSync(path.join("out", "index.html"))}`)
     console.log(`✅ build-info.json existe: ${fs.existsSync(path.join("out", "build-info.json"))}`)
+    console.log(`✅ .nojekyll existe: ${fs.existsSync(path.join("out", ".nojekyll"))}`)
+
+    console.log("\n🎉 Pronto para deploy no GitHub Pages!")
+    console.log("📋 Próximos passos:")
+    console.log("1. Fazer commit das alterações")
+    console.log("2. Push para a branch main")
+    console.log("3. Verificar o deploy em GitHub Actions")
+    console.log("4. Acessar o site em: https://meuphilim.github.io/Portifolio")
   } catch (error) {
     console.error("❌ Erro durante o build:", error.message)
     console.error("Stack trace:", error.stack)
