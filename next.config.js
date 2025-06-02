@@ -1,52 +1,74 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Configuração para export estático
   output: "export",
+
+  // Desabilitar otimizações que podem causar problemas no export
   trailingSlash: true,
-  distDir: "out",
-  
-  // Configuração de imagens para export estático
+  skipTrailingSlashRedirect: true,
+
+  // Configurações de imagem para export estático
   images: {
     unoptimized: true,
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'avatars.githubusercontent.com',
-      },
-    ],
-  },
-
-  // Variáveis de ambiente
-  env: {
-    GITHUB_USERNAME: process.env.GITHUB_USERNAME || "meuphilim",
-    NEXT_PUBLIC_GITHUB_USERNAME: process.env.NEXT_PUBLIC_GITHUB_USERNAME || "meuphilim",
-  },
-
-  // Opções do compilador
-  compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
-    styledComponents: true,
+    loader: "custom",
+    loaderFile: "./lib/imageLoader.js",
   },
 
   // Configurações de build
-  eslint: {
-    ignoreDuringBuilds: false, 
-  },
+  distDir: ".next",
+
+  // Configurações de TypeScript
   typescript: {
     ignoreBuildErrors: false,
   },
 
-  // Recursos experimentais
-  experimental: {
-    optimizeCss: true,
-    optimizePackageImports: ["lucide-react"],
-    webpackBuildWorker: true,
+  // Configurações de ESLint
+  eslint: {
+    ignoreDuringBuilds: false,
   },
 
-  // Webpack customizado (opcional)
-  webpack: (config) => {
-    // Adicione plugins ou regras adicionais se necessário
-    return config;
-  }
+  // Headers de segurança
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "origin-when-cross-origin",
+          },
+        ],
+      },
+    ]
+  },
+
+  // Configurações experimentais removidas para evitar conflitos
+  experimental: {
+    // Removido para compatibilidade com export estático
+  },
+
+  // Configurações de webpack
+  webpack: (config, { isServer }) => {
+    // Configurações específicas para o build
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      }
+    }
+
+    return config
+  },
 }
 
 module.exports = nextConfig

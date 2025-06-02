@@ -1,44 +1,61 @@
-name: Atualização Agendada
+name: 🔄 Atualização Agendada
 
 on:
   schedule:
-    - cron: '0 0,12 * * *'  # Executa às 00:00 e 12:00 UTC
-  workflow_dispatch:  # Permite execução manual
+    - cron: '0 6,18 * * *'  # 6:00 e 18:00 UTC (3:00 e 15:00 BRT)
+  workflow_dispatch:
 
 jobs:
   update:
-    name: Atualizar Dados do Portfólio
+    name: 📊 Atualizar Portfólio
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout do código
+      - name: 📥 Checkout do código
         uses: actions/checkout@v4
-
-      - name: Configurar Node.js
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: 🟢 Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
-
-      - name: Instalar dependências
-        run: npm ci || npm install
-
-      - name: Atualizar catálogo de projetos
+          
+      - name: 📦 Instalar dependências
+        run: npm ci --prefer-offline --no-audit
+        
+      - name: 📊 Atualizar dados dos repositórios
         run: node update_catalog.js
         env:
           GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME || github.repository_owner }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Verificar alterações
-        id: verify_changes
+          
+      - name: 🔍 Verificar alterações
+        id: changes
         run: |
-          git diff --quiet || echo "changes=true" >> $GITHUB_OUTPUT
-
-      - name: Commit e push se houver alterações
-        if: steps.verify_changes.outputs.changes == 'true'
+          if git diff --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "📊 Nenhuma alteração detectada"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "📊 Alterações detectadas:"
+            git diff --name-only
+          fi
+          
+      - name: 💾 Commit e push das alterações
+        if: steps.changes.outputs.changed == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
-          git commit -m "chore: atualização automática de dados [skip ci]"
+          git commit -m "🤖 Atualização automática do portfólio - $(date '+%Y-%m-%d %H:%M:%S')"
           git push
+          
+      - name: 🏗️ Build e deploy
+        if: steps.changes.outputs.changed == 'true'
+        run: node scripts/build.js
+        env:
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME || github.repository_owner }}
+          NEXT_PUBLIC_GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME || github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

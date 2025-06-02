@@ -1,52 +1,51 @@
-name: Deploy Vercel
+name: 🚀 Deploy Vercel
 
 on:
   push:
     branches: [main]
     paths-ignore:
       - 'docs/**'
-      - '**.md'
+      - '*.md'
+      - '.gitignore'
   workflow_dispatch:
 
 jobs:
   deploy:
-    name: Deploy para Vercel
+    name: 🌐 Deploy para Vercel
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout do código
+      - name: 📥 Checkout do código
         uses: actions/checkout@v4
-
-      - name: Configurar Node.js
+        
+      - name: 🟢 Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
-
-      - name: Instalar dependências
-        run: npm ci || npm install
-
-      - name: Instalar Vercel CLI
-        run: npm install -g vercel
-
-      - name: Verificar variáveis de ambiente
+          
+      - name: 📦 Instalar dependências
+        run: npm ci --prefer-offline --no-audit
+        
+      - name: 🔧 Verificar variáveis de ambiente
         run: |
-          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
-            echo "⚠️ VERCEL_TOKEN não está configurado. Pulando deploy."
-            exit 0
-          fi
-          if [ -z "${{ secrets.VERCEL_ORG_ID }}" ]; then
-            echo "⚠️ VERCEL_ORG_ID não está configurado. Pulando deploy."
-            exit 0
-          fi
-          if [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
-            echo "⚠️ VERCEL_PROJECT_ID não está configurado. Pulando deploy."
-            exit 0
-          fi
-
-      - name: Deploy para produção
-        run: |
-          vercel --token ${{ secrets.VERCEL_TOKEN }} --prod --yes \
-          --scope ${{ secrets.VERCEL_ORG_ID }} \
-          --env GITHUB_USERNAME=${{ secrets.GITHUB_USERNAME || github.repository_owner }} \
-          --env NEXT_PUBLIC_GITHUB_USERNAME=${{ secrets.GITHUB_USERNAME || github.repository_owner }}
+          echo "GITHUB_USERNAME: ${GITHUB_USERNAME:-${{ github.repository_owner }}}"
+          echo "Build será executado com usuário: ${GITHUB_USERNAME:-${{ github.repository_owner }}}"
+        env:
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME || github.repository_owner }}
+          
+      - name: 🏗️ Executar build
+        run: node scripts/build.js
+        env:
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME || github.repository_owner }}
+          NEXT_PUBLIC_GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME || github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: 🚀 Deploy para Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          vercel-args: '--prod'
