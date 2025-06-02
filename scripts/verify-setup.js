@@ -2,57 +2,60 @@
 
 import fs from "fs/promises"
 
-const REQUIRED_SECRETS = ["GITHUB_TOKEN", "VERCEL_TOKEN", "VERCEL_ORG_ID", "VERCEL_PROJECT_ID"]
+const REQUIRED_FILES = ["package.json", "next.config.js", "vercel.json", ".gitignore", ".env.example", "tsconfig.json"]
+
+const REQUIRED_DIRS = ["app", ".github/workflows", "scripts"]
 
 const REQUIRED_ENV_VARS = ["GITHUB_USERNAME", "NEXT_PUBLIC_GITHUB_USERNAME"]
 
-async function verifySetup() {
-  console.log("🔍 Verificando configuração do projeto...\n")
-
-  // Verificar arquivos essenciais
-  const requiredFiles = [
-    "package.json",
-    "next.config.js",
-    "vercel.json",
-    ".vercel/project.json",
-    ".github/workflows/pages.yml",
-    ".github/workflows/update-portfolio.yml",
-    ".github/workflows/deploy-vercel-production.yml",
-  ]
-
-  console.log("📁 Verificando arquivos essenciais:")
-  for (const file of requiredFiles) {
-    try {
-      await fs.access(file)
-      console.log(`  ✅ ${file}`)
-    } catch {
-      console.log(`  ❌ ${file} - AUSENTE`)
-    }
-  }
-
-  // Verificar configuração do Vercel
-  console.log("\n🔧 Verificando configuração do Vercel:")
+async function checkFile(filePath) {
   try {
-    const vercelConfig = JSON.parse(await fs.readFile(".vercel/project.json", "utf8"))
-    console.log(`  ✅ Org ID: ${vercelConfig.orgId}`)
-    console.log(`  ✅ Project ID: ${vercelConfig.projectId}`)
+    await fs.access(filePath)
+    return true
   } catch {
-    console.log("  ❌ Arquivo .vercel/project.json não encontrado")
+    return false
+  }
+}
+
+async function checkDirectory(dirPath) {
+  try {
+    const stats = await fs.stat(dirPath)
+    return stats.isDirectory()
+  } catch {
+    return false
+  }
+}
+
+async function verifySetup() {
+  console.log("🔍 Verifying project setup...\n")
+
+  // Check required files
+  console.log("📁 Checking required files:")
+  for (const file of REQUIRED_FILES) {
+    const exists = await checkFile(file)
+    console.log(`  ${exists ? "✅" : "❌"} ${file}`)
   }
 
-  // Verificar variáveis de ambiente locais
-  console.log("\n🌍 Verificando variáveis de ambiente:")
+  // Check required directories
+  console.log("\n📂 Checking required directories:")
+  for (const dir of REQUIRED_DIRS) {
+    const exists = await checkDirectory(dir)
+    console.log(`  ${exists ? "✅" : "❌"} ${dir}`)
+  }
+
+  // Check environment variables
+  console.log("\n🌍 Checking environment variables:")
   for (const envVar of REQUIRED_ENV_VARS) {
     const value = process.env[envVar]
     if (value) {
       console.log(`  ✅ ${envVar}: ${value}`)
     } else {
-      console.log(`  ⚠️ ${envVar}: não configurado localmente`)
+      console.log(`  ⚠️ ${envVar}: not configured`)
     }
   }
 
-  // Testar API do GitHub
-  console.log("\n🐙 Testando API do GitHub:")
+  // Test GitHub API
+  console.log("\n🐙 Testing GitHub API:")
   try {
     const username = process.env.GITHUB_USERNAME || process.env.NEXT_PUBLIC_GITHUB_USERNAME || "meuphilim"
     const token = process.env.GITHUB_TOKEN
@@ -70,27 +73,39 @@ async function verifySetup() {
 
     if (response.ok) {
       const user = await response.json()
-      console.log(`  ✅ Usuário encontrado: ${user.name || user.login}`)
-      console.log(`  ✅ Repositórios públicos: ${user.public_repos}`)
-      console.log(`  ✅ Autenticação: ${token ? "Token" : "Pública"}`)
+      console.log(`  ✅ User found: ${user.name || user.login}`)
+      console.log(`  ✅ Public repos: ${user.public_repos}`)
+      console.log(`  ✅ Authentication: ${token ? "Token" : "Public"}`)
     } else {
-      console.log(`  ❌ Erro na API: ${response.status} ${response.statusText}`)
+      console.log(`  ❌ API error: ${response.status} ${response.statusText}`)
     }
   } catch (error) {
-    console.log(`  ❌ Erro ao testar API: ${error.message}`)
+    console.log(`  ❌ API test failed: ${error.message}`)
   }
 
-  console.log("\n🎯 Próximos passos:")
-  console.log("1. Adicionar secrets no GitHub:")
-  console.log("   - GITHUB_TOKEN: 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")
-  console.log("   - VERCEL_TOKEN: prj_O5sixObkLh6DGfIIUFJ5ZIFUZd2O")
-  console.log("   - VERCEL_ORG_ID: meuphilims-projects")
-  console.log("   - VERCEL_PROJECT_ID: prj_O5sixObkLh6DGfIIUFJ5ZIFUZd2O")
-  console.log("\n2. Ativar GitHub Pages em Settings > Pages")
-  console.log("\n3. Fazer push para ativar workflows:")
-  console.log("   git add . && git commit -m 'feat: configuração completa' && git push")
+  // Check package.json scripts
+  console.log("\n📦 Checking package.json scripts:")
+  try {
+    const packageJson = JSON.parse(await fs.readFile("package.json", "utf8"))
+    const requiredScripts = ["dev", "build", "start", "lint"]
 
-  console.log("\n✅ Verificação concluída!")
+    for (const script of requiredScripts) {
+      if (packageJson.scripts && packageJson.scripts[script]) {
+        console.log(`  ✅ ${script}: ${packageJson.scripts[script]}`)
+      } else {
+        console.log(`  ❌ ${script}: missing`)
+      }
+    }
+  } catch (error) {
+    console.log(`  ❌ Error reading package.json: ${error.message}`)
+  }
+
+  console.log("\n✅ Setup verification completed!")
+  console.log("\n🎯 Next steps:")
+  console.log("1. Configure GitHub repository secrets")
+  console.log("2. Enable GitHub Pages in repository settings")
+  console.log("3. Configure Vercel project settings")
+  console.log("4. Push changes to trigger workflows")
 }
 
 verifySetup().catch(console.error)

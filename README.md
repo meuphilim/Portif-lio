@@ -1,106 +1,201 @@
-# 🚀 Portfólio GitHub Automático
+# 🚀 Automated GitHub Portfolio
 
-Este projeto gera automaticamente um portfólio web a partir dos seus repositórios GitHub, com deploy automático no GitHub Pages.
+A modern, responsive portfolio website that automatically generates and updates from your GitHub repositories using CI/CD pipelines.
 
-## ✨ Funcionalidades
+## ✨ Features
 
-- 📊 **Listagem automática** de todos os seus repositórios públicos
-- 🎨 **Design responsivo** e moderno
-- 📈 **Estatísticas de linguagens** com gráficos visuais
-- 🔄 **Atualização automática** a cada 12 horas via GitHub Actions
-- 🌐 **Deploy automático** no GitHub Pages
-- 🏷️ **Badges e tópicos** dos repositórios
-- 🔗 **Links para demos** quando disponíveis
+- 📊 **Automatic repository listing** from GitHub API
+- 🎨 **Responsive design** with modern UI/UX
+- 📈 **Language statistics** with visual charts
+- 🔄 **Automated updates** every 12 hours via GitHub Actions
+- 🌐 **Dual deployment** to GitHub Pages and Vercel
+- 🏷️ **Repository badges and topics** display
+- 🔗 **Live demo links** when available
+- 🛡️ **Error handling** with fallback data
+- ⚡ **Performance optimized** with static generation
 
-## 🛠️ Configuração
+## 🛠️ Tech Stack
 
-### 1. Configurar Secrets (Opcional)
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Deployment**: Vercel + GitHub Pages
+- **CI/CD**: GitHub Actions
+- **API**: GitHub REST API v3
 
-Vá em **Settings > Secrets and variables > Actions** e adicione:
+## 🚀 Quick Start
 
-- `PORTFOLIO_GITHUB_USERNAME`: Seu username do GitHub (opcional, usa o owner do repo por padrão)
-- `PORTFOLIO_GITHUB_TOKEN`: Token de acesso pessoal do GitHub (opcional, para evitar rate limits)
-
-### 2. Ativar GitHub Pages
-
-1. Vá em **Settings > Pages**
-2. Em **Source**, selecione **GitHub Actions**
-3. Salve as configurações
-
-### 3. Executar pela primeira vez
-
-1. Vá na aba **Actions**
-2. Selecione o workflow **"Deploy GitHub Pages"**
-3. Clique em **"Run workflow"**
-
-## 🔄 Funcionamento
-
-### Workflows Automáticos
-
-- **Deploy GitHub Pages**: Executa a cada push na branch main
-- **Atualizar Portfólio**: Executa automaticamente a cada 12 horas
-
-### Estrutura Gerada
-
-\`\`\`
-build/
-├── index.html              # Página principal
-├── projects/               # Páginas individuais dos projetos
-│   ├── projeto-1.html
-│   └── projeto-2.html
-└── assets/
-    ├── css/style.css       # Estilos
-    └── js/script.js        # Scripts
-\`\`\`
-
-## 🎨 Personalização
-
-### Modificar informações pessoais
-
-Edite o arquivo `update_catalog.js` na função `generatePortfolioIndex()` para alterar:
-
-- Descrição pessoal
-- Links de contato
-- Habilidades listadas
-- Informações de contato
-
-### Personalizar design
-
-Modifique o arquivo `assets/css/style.css` para alterar:
-
-- Cores do tema
-- Fontes
-- Layout
-- Animações
-
-## 📊 Estatísticas Incluídas
-
-- Total de projetos públicos
-- Linguagens mais utilizadas
-- Gráfico visual de distribuição de linguagens
-- Data da última atualização de cada projeto
-
-## 🔧 Desenvolvimento Local
+### 1. Clone and Install
 
 \`\`\`bash
-# Instalar dependências
-npm install
-
-# Gerar o portfólio
-npm run build
-
-# Servir localmente (requer Python)
-npm run dev
+git clone https://github.com/yourusername/portfolio-github.git
+cd portfolio-github
+npm ci
 \`\`\`
 
-## 📝 Logs e Debugging
+### 2. Environment Setup
 
-Os workflows do GitHub Actions incluem logs detalhados para facilitar o debugging. Verifique a aba **Actions** para acompanhar a execução.
+\`\`\`bash
+cp .env.example .env.local
+# Edit .env.local with your GitHub username and token
+\`\`\`
 
-## 🤝 Contribuição
+### 3. Local Development
 
-Sinta-se à vontade para abrir issues ou pull requests para melhorar este projeto!
+\`\`\`bash
+npm run dev
+# Open http://localhost:3000
+\`\`\`
 
-## 📄 Licença
+### 4. Build and Deploy
 
-MIT License - veja o arquivo LICENSE para detalhes.
+\`\`\`bash
+npm run build  # Build for production
+npm run start  # Start production server
+\`\`\`
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `GITHUB_USERNAME` | Your GitHub username | ✅ |
+| `NEXT_PUBLIC_GITHUB_USERNAME` | Public GitHub username | ✅ |
+| `GITHUB_TOKEN` | GitHub Personal Access Token | ⚠️ Recommended |
+| `VERCEL_TOKEN` | Vercel deployment token | 🔧 For CI/CD |
+| `VERCEL_ORG_ID` | Vercel organization ID | 🔧 For CI/CD |
+| `VERCEL_PROJECT_ID` | Vercel project ID | 🔧 For CI/CD |
+
+### GitHub Repository Secrets
+
+Configure these in your repository settings under **Settings > Secrets and variables > Actions**:
+
+- `GITHUB_TOKEN`: Personal access token with `public_repo` scope
+- `VERCEL_TOKEN`: Vercel API token
+- `VERCEL_ORG_ID`: Your Vercel organization ID
+- `VERCEL_PROJECT_ID`: Your Vercel project ID
+
+## 🔄 Automated Workflows
+
+### 1. Continuous Integration (`ci.yml`)
+- **Triggers**: Push to main/develop, Pull requests
+- **Actions**: Lint, type check, build validation, tests
+- **Duration**: ~3-5 minutes
+
+### 2. Vercel Deployment (`deploy-vercel.yml`)
+- **Triggers**: Push to main (excluding docs)
+- **Actions**: Build and deploy to Vercel production
+- **Duration**: ~2-3 minutes
+
+### 3. Scheduled Updates (`scheduled-update.yml`)
+- **Triggers**: Every 12 hours (00:00, 12:00 UTC)
+- **Actions**: Update portfolio data, deploy to GitHub Pages
+- **Duration**: ~2-3 minutes
+
+## 📊 Project Structure
+
+\`\`\`
+portfolio-github/
+├── 📁 .github/workflows/     # GitHub Actions workflows
+├── 📁 app/                   # Next.js App Router
+│   ├── 📁 api/              # API routes
+│   ├── 📄 layout.tsx        # Root layout
+│   ├── 📄 page.tsx          # Main page
+│   └── 📄 globals.css       # Global styles
+├── 📁 scripts/              # Utility scripts
+├── 📄 .env.example          # Environment variables template
+├── 📄 .gitignore           # Git ignore rules
+├── 📄 next.config.js       # Next.js configuration
+├── 📄 package.json         # Dependencies and scripts
+├── 📄 tailwind.config.js   # Tailwind CSS configuration
+├── 📄 tsconfig.json        # TypeScript configuration
+└── 📄 vercel.json          # Vercel deployment configuration
+\`\`\`
+
+## 🔧 Development
+
+### Available Scripts
+
+\`\`\`bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run lint:fix     # Fix ESLint issues
+npm run type-check   # Run TypeScript type checking
+npm run format       # Format code with Prettier
+npm run clean        # Clean build artifacts
+npm test             # Run tests
+\`\`\`
+
+### Code Quality
+
+- **ESLint**: Code linting with Next.js recommended rules
+- **Prettier**: Code formatting with consistent style
+- **TypeScript**: Type safety and better developer experience
+- **Husky**: Git hooks for pre-commit validation
+
+## 🚀 Deployment
+
+### Automatic Deployment
+
+The project automatically deploys to both platforms:
+
+1. **GitHub Pages**: Static site at `https://yourusername.github.io/portfolio-github`
+2. **Vercel**: Dynamic site at `https://portfolio-github-yourusername.vercel.app`
+
+### Manual Deployment
+
+\`\`\`bash
+# Deploy to Vercel
+npx vercel --prod
+
+# Generate static site
+npm run generate
+\`\`\`
+
+## 🛡️ Error Handling
+
+The application includes comprehensive error handling:
+
+- **API Fallbacks**: Uses cached data when GitHub API is unavailable
+- **Rate Limiting**: Graceful handling of GitHub API rate limits
+- **Build Resilience**: Continues building even with API failures
+- **User Feedback**: Clear error messages and status indicators
+
+## 📈 Performance
+
+- **Static Generation**: Pre-built pages for optimal performance
+- **Image Optimization**: Optimized GitHub avatars and assets
+- **Caching**: Strategic caching of API responses
+- **Bundle Analysis**: Optimized JavaScript bundles
+- **Core Web Vitals**: Optimized for Google's performance metrics
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+If you encounter any issues:
+
+1. Check the [GitHub Actions logs](../../actions)
+2. Verify your environment variables
+3. Review the [Vercel deployment logs](https://vercel.com/dashboard)
+4. Open an issue with detailed information
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/) for the amazing framework
+- [Vercel](https://vercel.com/) for seamless deployment
+- [GitHub](https://github.com/) for the powerful API and Actions
+- [Tailwind CSS](https://tailwindcss.com/) for the utility-first styling
