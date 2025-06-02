@@ -6,7 +6,7 @@ import LoadingScreen from "@/components/LoadingScreen"
 import HeroSection from "@/components/sections/HeroSection"
 import OctoMindBanner from "@/components/sections/OctoMindBanner"
 import RepositoryStatus from "@/components/sections/RepositoryStatus"
-import ExperienceSection from "@/components/sections/ExperienceSection"
+import ChallengesSection from "@/components/sections/ChallengesSection"
 import ProjectsSection from "@/components/sections/ProjectsSection"
 import LanguagesSection from "@/components/sections/LanguagesSection"
 import SkillsSection from "@/components/sections/SkillsSection"
@@ -30,7 +30,7 @@ export default function Portfolio() {
         <HeroSection username={GITHUB_USERNAME} />
         <OctoMindBanner repos={repos} username={GITHUB_USERNAME} />
         <RepositoryStatus repos={repos} authStatus={authStatus} diagnosticInfo={diagnosticInfo} />
-        <ExperienceSection />
+        <ChallengesSection />
         <ProjectsSection repos={repos} username={GITHUB_USERNAME} />
         <LanguagesSection repos={repos} />
         <SkillsSection />
