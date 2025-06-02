@@ -37,22 +37,22 @@ export default function Portfolio() {
       try {
         setLoading(true)
 
-        // Try to fetch from our API route first
+        // Tentar buscar da nossa rota de API primeiro
         const response = await fetch("/api/github-repos")
 
         if (response.ok) {
           const data: ApiResponse = await response.json()
           setRepos(data.repos)
-          setAuthStatus(data.auth || "unknown")
+          setAuthStatus(data.auth || "desconhecido")
           setError(null)
         } else {
-          throw new Error(`API responded with status: ${response.status}`)
+          throw new Error(`API respondeu com status: ${response.status}`)
         }
       } catch (err) {
-        console.error("Failed to fetch repositories:", err)
-        setError(err instanceof Error ? err.message : "Unknown error")
+        console.error("Falha ao buscar repositórios:", err)
+        setError(err instanceof Error ? err.message : "Erro desconhecido")
 
-        // Fallback to direct GitHub API call
+        // Fallback para chamada direta da API do GitHub
         try {
           const fallbackResponse = await fetch(
             `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`,
@@ -62,12 +62,12 @@ export default function Portfolio() {
             const fallbackRepos = await fallbackResponse.json()
             const filteredRepos = fallbackRepos.filter((repo: any) => !repo.fork && !repo.archived && !repo.private)
             setRepos(filteredRepos)
-            setAuthStatus("public-fallback")
+            setAuthStatus("publico-fallback")
             setError(null)
           }
         } catch (fallbackErr) {
-          console.error("Fallback also failed:", fallbackErr)
-          setError("Unable to fetch repositories")
+          console.error("Fallback também falhou:", fallbackErr)
+          setError("Não foi possível buscar os repositórios")
         }
       } finally {
         setLoading(false)
@@ -108,7 +108,7 @@ export default function Portfolio() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading portfolio...</p>
+          <p className="mt-4 text-gray-600">Carregando portfólio...</p>
         </div>
       </div>
     )
@@ -116,45 +116,45 @@ export default function Portfolio() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
-      {/* Header */}
+      {/* Cabeçalho */}
       <header className="bg-blue-600 text-white shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <h1 className="text-xl font-bold">{GITHUB_USERNAME}</h1>
           <nav className="space-x-6 hidden md:flex">
-            <a href="#about" className="hover:text-blue-200 transition">
-              About
+            <a href="#sobre" className="hover:text-blue-200 transition">
+              Sobre
             </a>
-            <a href="#projects" className="hover:text-blue-200 transition">
-              Projects
+            <a href="#projetos" className="hover:text-blue-200 transition">
+              Projetos
             </a>
-            <a href="#contact" className="hover:text-blue-200 transition">
-              Contact
+            <a href="#contato" className="hover:text-blue-200 transition">
+              Contato
             </a>
           </nav>
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Seção Hero */}
       <section
-        id="about"
+        id="sobre"
         className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-24"
       >
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center justify-between">
             <div className="lg:w-1/2 mb-12 lg:mb-0">
               <h1 className="text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">
-                Hi, I'm <span className="text-indigo-400">{GITHUB_USERNAME}</span>
+                Olá, eu sou <span className="text-indigo-400">{GITHUB_USERNAME}</span>
               </h1>
               <p className="text-xl lg:text-2xl mb-10 text-gray-300 max-w-xl">
-                Full Stack Developer focused on performance, accessibility, and digital solutions that make a real
-                difference.
+                Desenvolvedor Full Stack focado em performance, acessibilidade e soluções digitais que fazem a
+                diferença.
               </p>
               <div className="flex flex-wrap gap-4">
                 <a
-                  href="#projects"
+                  href="#projetos"
                   className="bg-indigo-500 text-white px-8 py-3 rounded-lg font-medium hover:bg-indigo-400 transition-colors shadow-md"
                 >
-                  View Projects
+                  Ver Projetos
                 </a>
                 <a
                   href={`https://github.com/${GITHUB_USERNAME}`}
@@ -170,7 +170,7 @@ export default function Portfolio() {
               <div className="relative">
                 <img
                   src={`https://github.com/${GITHUB_USERNAME}.png?size=300`}
-                  alt={`${GITHUB_USERNAME} avatar`}
+                  alt={`Avatar de ${GITHUB_USERNAME}`}
                   className="w-64 h-64 lg:w-80 lg:h-80 rounded-full border-4 border-gray-700 shadow-xl"
                 />
               </div>
@@ -179,24 +179,24 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* Status Section */}
+      {/* Seção de Status */}
       <section className="py-12 bg-white border-b">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">Repository Status</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">Status dos Repositórios</h2>
           <div className="flex flex-wrap justify-center gap-2 mb-4">
             <img
-              src={`https://img.shields.io/badge/Total_Projects-${repos.length}-blue?style=for-the-badge`}
-              alt="Total Projects"
+              src={`https://img.shields.io/badge/Total_de_Projetos-${repos.length}-blue?style=for-the-badge`}
+              alt="Total de Projetos"
               className="h-7"
             />
             <img
-              src={`https://img.shields.io/badge/Languages-${new Set(repos.map((repo) => repo.language).filter(Boolean)).size}-orange?style=for-the-badge`}
-              alt="Languages"
+              src={`https://img.shields.io/badge/Linguagens-${new Set(repos.map((repo) => repo.language).filter(Boolean)).size}-orange?style=for-the-badge`}
+              alt="Linguagens"
               className="h-7"
             />
             <img
-              src={`https://img.shields.io/badge/Total_Stars-${repos.reduce((acc, repo) => acc + repo.stargazers_count, 0)}-yellow?style=for-the-badge`}
-              alt="Total Stars"
+              src={`https://img.shields.io/badge/Total_de_Estrelas-${repos.reduce((acc, repo) => acc + repo.stargazers_count, 0)}-yellow?style=for-the-badge`}
+              alt="Total de Estrelas"
               className="h-7"
             />
           </div>
@@ -211,22 +211,22 @@ export default function Portfolio() {
               }`}
             >
               {authStatus === "token"
-                ? "✅ Using authenticated GitHub API"
+                ? "✅ Usando API autenticada do GitHub"
                 : authStatus === "fallback"
-                  ? "⚠️ Using fallback data"
-                  : "✅ Connected to public GitHub API"}
+                  ? "⚠️ Usando dados de fallback"
+                  : "✅ Conectado à API pública do GitHub"}
             </div>
           )}
           {error && <div className="mt-2 text-xs text-red-600 max-w-md mx-auto">{error}</div>}
         </div>
       </section>
 
-      {/* Projects Section */}
-      <section id="projects" className="py-16 bg-white">
+      {/* Seção de Projetos */}
+      <section id="projetos" className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-800 mb-4">🚀 My Projects</h2>
+          <h2 className="text-4xl font-bold text-center text-gray-800 mb-4">🚀 Meus Projetos</h2>
           <p className="text-xl text-center text-gray-600 mb-12">
-            Explore some of my work and open source contributions
+            Explore alguns dos meus trabalhos e contribuições open source
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -245,7 +245,7 @@ export default function Portfolio() {
                   </div>
 
                   <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {repo.description || "No description available."}
+                    {repo.description || "Nenhuma descrição disponível."}
                   </p>
 
                   <div className="flex items-center justify-between mb-4">
@@ -254,7 +254,7 @@ export default function Portfolio() {
                       <span className="text-sm text-gray-600">{repo.language || "N/A"}</span>
                     </div>
                     <span className="text-xs text-gray-400">
-                      {new Date(repo.updated_at).toLocaleDateString("en-US")}
+                      {new Date(repo.updated_at).toLocaleDateString("pt-BR")}
                     </span>
                   </div>
 
@@ -280,7 +280,7 @@ export default function Portfolio() {
                       rel="noopener noreferrer"
                       className="flex-1 bg-blue-600 text-white text-center py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
                     >
-                      View Code
+                      Ver Código
                     </a>
                     {repo.homepage && (
                       <a
@@ -306,19 +306,19 @@ export default function Portfolio() {
                 rel="noopener noreferrer"
                 className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
-                View All Projects
+                Ver Todos os Projetos
               </a>
             </div>
           )}
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-16 bg-gray-50">
+      {/* Seção de Contato */}
+      <section id="contato" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold text-gray-800 mb-8">📬 Get In Touch</h2>
+          <h2 className="text-4xl font-bold text-gray-800 mb-8">📬 Entre em Contato</h2>
           <p className="text-xl text-gray-600 mb-8">
-            I'm always interested in new opportunities and interesting projects.
+            Estou sempre interessado em novas oportunidades e projetos interessantes.
           </p>
           <div className="flex justify-center space-x-6">
             <a
@@ -330,23 +330,23 @@ export default function Portfolio() {
               GitHub
             </a>
             <a
-              href={`mailto:contact@${GITHUB_USERNAME}.dev`}
+              href={`mailto:contato@${GITHUB_USERNAME}.dev`}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
             >
-              Email
+              E-mail
             </a>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Rodapé */}
       <footer className="bg-gray-800 text-white py-8">
         <div className="container mx-auto px-4 text-center">
           <p>
-            &copy; {new Date().getFullYear()} {GITHUB_USERNAME}. Built with ❤️ and automation.
+            &copy; {new Date().getFullYear()} {GITHUB_USERNAME}. Feito com ❤️ e automação.
           </p>
           <p className="text-sm mt-2 text-gray-400">
-            Automatically updated via GitHub Actions • Last updated: {new Date().toLocaleDateString()}
+            Atualizado automaticamente via GitHub Actions • Última atualização: {new Date().toLocaleDateString("pt-BR")}
           </p>
         </div>
       </footer>

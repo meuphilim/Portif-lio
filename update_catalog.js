@@ -16,15 +16,15 @@ const ROOT_DIR = isVercel ? "/tmp" : __dirname
 // Caminhos para o site do portfólio gerado
 const BUILD_DIR = isVercel ? "/tmp/build" : path.join(ROOT_DIR, "build")
 const BUILD_INDEX_HTML_PATH = path.join(BUILD_DIR, "index.html")
-const BUILD_PROJECTS_DIR = path.join(BUILD_DIR, "projects")
+const BUILD_PROJECTS_DIR = path.join(BUILD_DIR, "projetos")
 const BUILD_ASSETS_CSS_DIR = path.join(BUILD_DIR, "assets", "css")
 const BUILD_ASSETS_JS_DIR = path.join(BUILD_DIR, "assets", "js")
-const BUILD_ASSETS_IMAGES_DIR = path.join(BUILD_DIR, "assets", "images")
+const BUILD_ASSETS_IMAGES_DIR = path.join(BUILD_DIR, "assets", "imagens")
 
 // Caminhos para templates e assets
 const PROJECT_MODEL_HTML_PATH = isVercel
-  ? path.join(__dirname, "docs", "project-model.html")
-  : path.join(ROOT_DIR, "docs", "project-model.html")
+  ? path.join(__dirname, "docs", "modelo-projeto.html")
+  : path.join(ROOT_DIR, "docs", "modelo-projeto.html")
 const ASSETS_CSS_PATH = isVercel
   ? path.join(__dirname, "assets", "css", "style.css")
   : path.join(ROOT_DIR, "assets", "css", "style.css")
@@ -55,7 +55,7 @@ console.log(
           : "Local"
   }`,
 )
-console.log(`👤 Username: ${GITHUB_USERNAME}`)
+console.log(`👤 Nome de usuário: ${GITHUB_USERNAME}`)
 console.log(`🔑 Token configurado: ${GITHUB_TOKEN ? "Sim" : "Não"}`)
 
 // Emojis para linguagens
@@ -177,19 +177,19 @@ async function copyStaticAssets() {
 async function createDefaultCSS() {
   const defaultCSS = `/* CSS básico gerado automaticamente */
 :root {
-  --primary-color: #007bff;
-  --secondary-color: #6c757d;
-  --background-color: #f8f9fa;
-  --card-background: #ffffff;
-  --text-color: #343a40;
-  --border-color: #e9ecef;
+  --cor-primaria: #007bff;
+  --cor-secundaria: #6c757d;
+  --cor-fundo: #f8f9fa;
+  --cor-fundo-card: #ffffff;
+  --cor-texto: #343a40;
+  --cor-borda: #e9ecef;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
-  color: var(--text-color);
-  background-color: var(--background-color);
+  color: var(--cor-texto);
+  background-color: var(--cor-fundo);
   margin: 0;
   padding: 0;
 }
@@ -201,21 +201,21 @@ body {
 }
 
 header {
-  background-color: var(--primary-color);
+  background-color: var(--cor-primaria);
   color: white;
   padding: 1rem 0;
 }
 
-.project-grid {
+.grade-projetos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin-top: 2rem;
 }
 
-.project-card {
-  background: var(--card-background);
-  border: 1px solid var(--border-color);
+.card-projeto {
+  background: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -230,13 +230,13 @@ header {
   margin-right: 0.5rem;
 }
 
-.btn-primary {
-  background-color: var(--primary-color);
+.btn-primario {
+  background-color: var(--cor-primaria);
   color: white;
 }
 
-.btn-secondary {
-  background-color: var(--secondary-color);
+.btn-secundario {
+  background-color: var(--cor-secundaria);
   color: white;
 }`
 
@@ -283,7 +283,7 @@ async function fetchRepositories() {
   }
 
   const headers = {
-    "User-Agent": `${GITHUB_USERNAME}-portfolio-generator`,
+    "User-Agent": `${GITHUB_USERNAME}-gerador-portfolio`,
     Accept: "application/vnd.github.v3+json",
   }
 
@@ -314,7 +314,7 @@ async function fetchRepositories() {
 
         const retryResponse = await fetch(url, { headers })
         if (!retryResponse.ok) {
-          throw new Error(`GitHub API error: ${retryResponse.status} ${retryResponse.statusText}`)
+          throw new Error(`Erro da API do GitHub: ${retryResponse.status} ${retryResponse.statusText}`)
         }
 
         const repos = await retryResponse.json()
@@ -329,9 +329,9 @@ async function fetchRepositories() {
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error(`❌ GitHub API error: ${response.status} ${response.statusText}`)
-        console.error(`Response: ${errorText}`)
-        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`)
+        console.error(`❌ Erro da API do GitHub: ${response.status} ${response.statusText}`)
+        console.error(`Resposta: ${errorText}`)
+        throw new Error(`Erro da API do GitHub: ${response.status} ${response.statusText}`)
       }
 
       const repos = await response.json()
@@ -377,7 +377,7 @@ function filterRepositories(repos) {
 function generateProjectCardsHtml(repos) {
   if (repos.length === 0) {
     return `
-<div class="no-projects">
+<div class="sem-projetos">
   <h3>🔍 Nenhum projeto encontrado</h3>
   <p><em>Os projetos aparecerão aqui assim que forem detectados pelo script.</em></p>
 </div>`
@@ -394,26 +394,26 @@ function generateProjectCardsHtml(repos) {
 
     const topicsBadges =
       repo.topics && repo.topics.length > 0
-        ? repo.topics.map((topic) => `<span class="badge topic-badge">${sanitizeHtml(topic)}</span>`).join(" ")
+        ? repo.topics.map((topic) => `<span class="badge badge-topico">${sanitizeHtml(topic)}</span>`).join(" ")
         : ""
 
     const demoLink = repo.homepage
-      ? `<a href="${repo.homepage}" target="_blank" class="btn btn-secondary">🌐 Demo ao Vivo</a>`
+      ? `<a href="${repo.homepage}" target="_blank" class="btn btn-secundario">🌐 Demo ao Vivo</a>`
       : ""
 
     cardsHtml += `
-    <div class="project-card">
-        <h3 class="project-title"><a href="./projects/${docFileName}.html">${name}</a></h3>
-        <p class="project-description">${description}</p>
-        <div class="project-meta">
-            <span class="language">${languageDisplay}</span>
-            <div class="topics">${topicsBadges}</div>
+    <div class="card-projeto">
+        <h3 class="titulo-projeto"><a href="./projetos/${docFileName}.html">${name}</a></h3>
+        <p class="descricao-projeto">${description}</p>
+        <div class="meta-projeto">
+            <span class="linguagem">${languageDisplay}</span>
+            <div class="topicos">${topicsBadges}</div>
         </div>
-        <div class="project-actions">
-            <a href="${repo.html_url}" target="_blank" class="btn btn-primary">Ver Código</a>
+        <div class="acoes-projeto">
+            <a href="${repo.html_url}" target="_blank" class="btn btn-primario">Ver Código</a>
             ${demoLink}
         </div>
-        <small class="project-updated">Última atualização: ${updatedAt}</small>
+        <small class="projeto-atualizado">Última atualização: ${updatedAt}</small>
     </div>`
   }
   return cardsHtml
@@ -430,22 +430,22 @@ function generateLanguageStatsHtml(repos) {
 
   const sortedLanguages = Object.entries(languageCounts).sort(([, countA], [, countB]) => countB - countA)
 
-  let statsHtml = '<div class="language-bar-container">'
+  let statsHtml = '<div class="container-barra-linguagem">'
 
   // Gerar a barra de progresso visual
-  statsHtml += '<div class="language-bar">'
+  statsHtml += '<div class="barra-linguagem">'
   sortedLanguages.forEach(([lang, count]) => {
     const percentage = (count / totalRepos) * 100
     const color = getLanguageColor(lang)
-    statsHtml += `<div class="language-segment" style="width: ${percentage}%; background-color: #${color};" title="${lang}: ${percentage.toFixed(1)}%"></div>`
+    statsHtml += `<div class="segmento-linguagem" style="width: ${percentage}%; background-color: #${color};" title="${lang}: ${percentage.toFixed(1)}%"></div>`
   })
   statsHtml += "</div>"
 
   // Gerar a lista de linguagens com porcentagens
-  statsHtml += '<ul class="language-details">'
+  statsHtml += '<ul class="detalhes-linguagem">'
   sortedLanguages.forEach(([lang, count]) => {
     const percentage = (count / totalRepos) * 100
-    statsHtml += `<li><span class="language-color-box" style="background-color: #${getLanguageColor(lang)};"></span>${sanitizeHtml(lang)} ${percentage.toFixed(1)}%</li>`
+    statsHtml += `<li><span class="caixa-cor-linguagem" style="background-color: #${getLanguageColor(lang)};"></span>${sanitizeHtml(lang)} ${percentage.toFixed(1)}%</li>`
   })
   statsHtml += "</ul>"
 
@@ -476,61 +476,61 @@ async function generatePortfolioIndex(repos) {
             <h1><a href="index.html">Meu Portfólio</a></h1>
             <nav>
                 <ul>
-                    <li><a href="#about">Sobre Mim</a></li>
-                    <li><a href="#projects">Projetos</a></li>
-                    <li><a href="#skills">Habilidades</a></li>
-                    <li><a href="#contact">Contato</a></li>
+                    <li><a href="#sobre">Sobre Mim</a></li>
+                    <li><a href="#projetos">Projetos</a></li>
+                    <li><a href="#habilidades">Habilidades</a></li>
+                    <li><a href="#contato">Contato</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
     <main class="container">
-        <section id="about" class="hero-section">
-            <div class="profile-intro">
-                <img src="https://github.com/${GITHUB_USERNAME}.png?size=200" alt="Foto de Perfil de ${GITHUB_USERNAME}" class="profile-pic">
+        <section id="sobre" class="secao-hero">
+            <div class="intro-perfil">
+                <img src="https://github.com/${GITHUB_USERNAME}.png?size=200" alt="Foto de Perfil de ${GITHUB_USERNAME}" class="foto-perfil">
                 <h2>Olá, eu sou ${GITHUB_USERNAME}!</h2>
                 <p>Sou um desenvolvedor apaixonado por criar soluções inovadoras. Este portfólio apresenta alguns dos meus projetos e habilidades.</p>
-                <div class="social-links">
+                <div class="links-sociais">
                     <a href="https://github.com/${GITHUB_USERNAME}" target="_blank">GitHub</a>
                 </div>
             </div>
         </section>
 
-        <section id="projects" class="projects-section">
+        <section id="projetos" class="secao-projetos">
             <h2>🚀 Meus Projetos Recentes</h2>
-            <p class="section-description">Explore alguns dos meus trabalhos e contribuições de código aberto.</p>
-            <div class="project-grid">
+            <p class="descricao-secao">Explore alguns dos meus trabalhos e contribuições de código aberto.</p>
+            <div class="grade-projetos">
                 ${generateProjectCardsHtml(repos)}
             </div>
-            <div class="stats-section">
+            <div class="secao-estatisticas">
                 <h3>📈 Estatísticas do Portfólio</h3>
-                <div class="stats-badges">
+                <div class="badges-estatisticas">
                     <img src="https://img.shields.io/badge/Total_de_Projetos-${repos.length}-blue?style=for-the-badge" alt="Total de Projetos">
                     <img src="https://img.shields.io/badge/Linguagens-${new Set(repos.map((repo) => repo.language).filter(Boolean)).size}-orange?style=for-the-badge" alt="Linguagens">
                 </div>
-                <div class="language-stats">
+                <div class="estatisticas-linguagem">
                     <h3>Linguagens Mais Utilizadas</h3>
                     ${generateLanguageStatsHtml(repos)}
                 </div>
             </div>
         </section>
 
-        <section id="skills" class="skills-section">
+        <section id="habilidades" class="secao-habilidades">
             <h2>🛠️ Minhas Habilidades</h2>
-            <div class="skills-grid">
-                <span class="skill-badge">JavaScript</span>
-                <span class="skill-badge">TypeScript</span>
-                <span class="skill-badge">React</span>
-                <span class="skill-badge">Node.js</span>
-                <span class="skill-badge">HTML5</span>
-                <span class="skill-badge">CSS3</span>
-                <span class="skill-badge">Git</span>
-                <span class="skill-badge">Docker</span>
+            <div class="grade-habilidades">
+                <span class="badge-habilidade">JavaScript</span>
+                <span class="badge-habilidade">TypeScript</span>
+                <span class="badge-habilidade">React</span>
+                <span class="badge-habilidade">Node.js</span>
+                <span class="badge-habilidade">HTML5</span>
+                <span class="badge-habilidade">CSS3</span>
+                <span class="badge-habilidade">Git</span>
+                <span class="badge-habilidade">Docker</span>
             </div>
         </section>
 
-        <section id="contact" class="contact-section">
+        <section id="contato" class="secao-contato">
             <h2>📬 Contato</h2>
             <p>Sinta-se à vontade para entrar em contato comigo!</p>
             <ul>
@@ -566,31 +566,31 @@ async function generateDocumentation(repos) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ PROJECT_NAME }} - Portfólio</title>
+    <title>{{ NOME_PROJETO }} - Portfólio</title>
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <header class="project-header">
+    <header class="cabecalho-projeto">
         <div class="container">
             <h1><a href="../index.html">← Voltar ao Portfólio</a></h1>
-            <h2>{{ PROJECT_NAME }}</h2>
+            <h2>{{ NOME_PROJETO }}</h2>
         </div>
     </header>
-    <main class="container project-detail">
+    <main class="container detalhe-projeto">
         <section>
             <h3>📋 Visão Geral</h3>
-            <p>{{ PROJECT_DESCRIPTION }}</p>
+            <p>{{ DESCRICAO_PROJETO }}</p>
         </section>
         <section>
             <h3>🛠️ Tecnologias Utilizadas</h3>
-            <p><strong>Linguagem Principal:</strong> {{ PROJECT_LANGUAGE }}</p>
-            <p><strong>Tópicos/Skills:</strong> {{ PROJECT_TOPICS }}</p>
+            <p><strong>Linguagem Principal:</strong> {{ LINGUAGEM_PROJETO }}</p>
+            <p><strong>Tópicos/Habilidades:</strong> {{ TOPICOS_PROJETO }}</p>
         </section>
         <section>
             <h3>🔗 Links</h3>
             <ul>
-                <li><a href="{{ PROJECT_URL }}" target="_blank">📂 Repositório GitHub</a></li>
-                {{ PROJECT_DEMO_LINK_PLACEHOLDER }}
+                <li><a href="{{ URL_PROJETO }}" target="_blank">📂 Repositório GitHub</a></li>
+                {{ PLACEHOLDER_LINK_DEMO_PROJETO }}
             </ul>
         </section>
         <section>
@@ -600,7 +600,7 @@ async function generateDocumentation(repos) {
     </main>
     <footer>
         <div class="container">
-            <p>&copy; ${new Date().getFullYear()} {{ GITHUB_USERNAME }}.</p>
+            <p>&copy; ${new Date().getFullYear()} {{ NOME_USUARIO_GITHUB }}.</p>
         </div>
     </footer>
 </body>
@@ -613,30 +613,30 @@ async function generateDocumentation(repos) {
       const docPath = path.join(BUILD_PROJECTS_DIR, `${repoSlug}.html`)
 
       let docContent = projectModelHtml
-        .replace(/\{\{ PROJECT_NAME \}\}/g, sanitizeHtml(repo.name))
+        .replace(/\{\{ NOME_PROJETO \}\}/g, sanitizeHtml(repo.name))
         .replace(
-          /\{\{ PROJECT_DESCRIPTION \}\}/g,
+          /\{\{ DESCRICAO_PROJETO \}\}/g,
           repo.description ? sanitizeHtml(repo.description) : "Sem descrição disponível.",
         )
-        .replace(/\{\{ PROJECT_LANGUAGE \}\}/g, repo.language ? sanitizeHtml(repo.language) : "Não especificado")
-        .replace(/\{\{ PROJECT_URL \}\}/g, repo.html_url)
-        .replace(/\{\{ GITHUB_USERNAME \}\}/g, GITHUB_USERNAME)
+        .replace(/\{\{ LINGUAGEM_PROJETO \}\}/g, repo.language ? sanitizeHtml(repo.language) : "Não especificado")
+        .replace(/\{\{ URL_PROJETO \}\}/g, repo.html_url)
+        .replace(/\{\{ NOME_USUARIO_GITHUB \}\}/g, GITHUB_USERNAME)
 
       docContent = docContent.replace(
-        /\{\{ PROJECT_TOPICS \}\}/g,
+        /\{\{ TOPICOS_PROJETO \}\}/g,
         repo.topics && repo.topics.length > 0
-          ? repo.topics.map((topic) => `<span class="badge topic-badge">${sanitizeHtml(topic)}</span>`).join(", ")
+          ? repo.topics.map((topic) => `<span class="badge badge-topico">${sanitizeHtml(topic)}</span>`).join(", ")
           : "Nenhum tópico definido",
       )
 
       docContent = docContent.replace(
-        /\{\{ PROJECT_DEMO_LINK_PLACEHOLDER \}\}/g,
+        /\{\{ PLACEHOLDER_LINK_DEMO_PROJETO \}\}/g,
         repo.homepage ? `<li><a href="${repo.homepage}" target="_blank">🌐 Demo ao Vivo</a></li>` : "",
       )
 
       await fs.writeFile(docPath, docContent)
       console.log(`📄 Página de detalhes gerada para ${repo.name}`)
-      return { status: "updated", repo: repo.name }
+      return { status: "atualizado", repo: repo.name }
     }),
   )
 

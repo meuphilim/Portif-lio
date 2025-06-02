@@ -1,6 +1,6 @@
 # 🚀 Portfólio GitHub Automatizado
 
-Um site de portfólio moderno e responsivo que gera e atualiza automaticamente a partir dos seus repositórios GitHub usando pipelines de CI/CD.
+Um site de portfólio moderno e responsivo que gera e atualiza automaticamente a partir dos seus repositórios GitHub usando pipelines de CI/CD. **Totalmente em português brasileiro (pt-BR)**.
 
 ## ✨ Funcionalidades
 
@@ -13,6 +13,28 @@ Um site de portfólio moderno e responsivo que gera e atualiza automaticamente a
 - 🔗 **Links para demos ao vivo** quando disponíveis
 - 🛡️ **Tratamento de erros** com dados de fallback
 - ⚡ **Otimizado para performance** com geração estática
+- 🇧🇷 **Interface 100% em português brasileiro**
+
+## 🌍 Internacionalização
+
+Este projeto foi desenvolvido exclusivamente em **português brasileiro (pt-BR)**:
+
+- ✅ **Interface do usuário** completamente traduzida
+- ✅ **Comentários no código** em português
+- ✅ **Documentação** em português brasileiro
+- ✅ **Mensagens de sistema** em pt-BR
+- ✅ **Workflows do GitHub Actions** traduzidos
+- ✅ **Scripts e utilitários** em português
+- ✅ **Configurações de locale** para pt-BR
+
+### Estrutura de Tradução
+
+```
+lib/
+├── i18n.ts              # Configurações de internacionalização
+└── messages/
+    └── pt-BR.ts          # Mensagens em português brasileiro
+```
 
 ## 🛠️ Stack Tecnológica
 
@@ -22,6 +44,7 @@ Um site de portfólio moderno e responsivo que gera e atualiza automaticamente a
 - **Deploy**: Vercel + GitHub Pages
 - **CI/CD**: GitHub Actions
 - **API**: GitHub REST API v3
+- **Idioma**: Português Brasileiro (pt-BR)
 
 ## 🚀 Início Rápido
 
@@ -82,32 +105,39 @@ Configure estes nas configurações do seu repositório em **Settings > Secrets 
 - **Gatilhos**: Push para main/develop, Pull requests
 - **Ações**: Lint, verificação de tipos, validação de build, testes
 - **Duração**: ~3-5 minutos
+- **Idioma**: Português brasileiro
 
 ### 2. Deploy Vercel (`deploy-vercel.yml`)
 - **Gatilhos**: Push para main (excluindo docs)
 - **Ações**: Build e deploy para produção Vercel
 - **Duração**: ~2-3 minutos
+- **Idioma**: Português brasileiro
 
 ### 3. Atualizações Agendadas (`scheduled-update.yml`)
 - **Gatilhos**: A cada 12 horas (00:00, 12:00 UTC)
 - **Ações**: Atualizar dados do portfólio, deploy para GitHub Pages
 - **Duração**: ~2-3 minutos
+- **Idioma**: Português brasileiro
 
 ## 📊 Estrutura do Projeto
 
 ```
 portfolio-github/
-├── 📁 .github/workflows/     # Workflows do GitHub Actions
+├── 📁 .github/workflows/     # Workflows do GitHub Actions (pt-BR)
 ├── 📁 app/                   # Next.js App Router
-│   ├── 📁 api/              # Rotas da API
-│   ├── 📄 layout.tsx        # Layout raiz
-│   ├── 📄 page.tsx          # Página principal
+│   ├── 📁 api/              # Rotas da API (pt-BR)
+│   ├── 📄 layout.tsx        # Layout raiz (pt-BR)
+│   ├── 📄 page.tsx          # Página principal (pt-BR)
 │   └── 📄 globals.css       # Estilos globais
-├── 📁 scripts/              # Scripts utilitários
+├── 📁 lib/                   # Bibliotecas e utilitários
+│   ├── 📄 i18n.ts           # Configuração de internacionalização
+│   └── 📁 messages/         # Mensagens traduzidas
+├── 📁 scripts/              # Scripts utilitários (pt-BR)
+├── 📁 docs/                 # Documentação (pt-BR)
 ├── 📄 .env.example          # Template de variáveis de ambiente
 ├── 📄 .gitignore           # Regras do Git ignore
 ├── 📄 next.config.js       # Configuração do Next.js
-├── 📄 package.json         # Dependências e scripts
+├── 📄 package.json         # Dependências e scripts (pt-BR)
 ├── 📄 tailwind.config.js   # Configuração do Tailwind CSS
 ├── 📄 tsconfig.json        # Configuração do TypeScript
 └── 📄 vercel.json          # Configuração de deploy Vercel
@@ -125,7 +155,8 @@ npm run lint         # Executar ESLint
 npm run lint:fix     # Corrigir problemas do ESLint
 npm run type-check   # Executar verificação de tipos TypeScript
 npm run format       # Formatar código com Prettier
-npm run clean        # Limpar artefatos de build
+npm run gerar        # Gerar portfólio estático
+npm run limpar       # Limpar artefatos de build
 npm test             # Executar testes
 ```
 
@@ -135,6 +166,7 @@ npm test             # Executar testes
 - **Prettier**: Formatação de código com estilo consistente
 - **TypeScript**: Segurança de tipos e melhor experiência de desenvolvimento
 - **Husky**: Git hooks para validação pré-commit
+- **Comentários**: Todos em português brasileiro
 
 ## 🚀 Deploy
 
@@ -152,7 +184,7 @@ O projeto faz deploy automaticamente para ambas as plataformas:
 npx vercel --prod
 
 # Gerar site estático
-npm run generate
+npm run gerar
 ```
 
 ## 🛡️ Tratamento de Erros
@@ -163,6 +195,7 @@ A aplicação inclui tratamento abrangente de erros:
 - **Limitação de Taxa**: Tratamento gracioso dos limites de taxa da API do GitHub
 - **Resiliência de Build**: Continua o build mesmo com falhas da API
 - **Feedback do Usuário**: Mensagens de erro claras e indicadores de status
+- **Mensagens**: Todas em português brasileiro
 
 ## 📈 Performance
 
@@ -171,14 +204,25 @@ A aplicação inclui tratamento abrangente de erros:
 - **Cache**: Cache estratégico de respostas da API
 - **Análise de Bundle**: Bundles JavaScript otimizados
 - **Core Web Vitals**: Otimizado para métricas de performance do Google
+- **Locale**: Configurado para pt-BR
 
 ## 🤝 Contribuindo
+
+**Importante**: Todas as contribuições devem ser feitas em português brasileiro.
 
 1. Faça um fork do repositório
 2. Crie uma branch de feature (`git checkout -b feature/funcionalidade-incrivel`)
 3. Commit suas mudanças (`git commit -m 'Adicionar funcionalidade incrível'`)
 4. Push para a branch (`git push origin feature/funcionalidade-incrivel`)
 5. Abra um Pull Request
+
+### Diretrizes de Contribuição
+
+- ✅ **Código**: Comentários em português brasileiro
+- ✅ **Commits**: Mensagens em português
+- ✅ **Pull Requests**: Descrições em português
+- ✅ **Issues**: Relatórios em português
+- ✅ **Documentação**: Sempre em português brasileiro
 
 ## 📄 Licença
 
@@ -191,7 +235,7 @@ Se você encontrar algum problema:
 1. Verifique os [logs do GitHub Actions](../../actions)
 2. Verifique suas variáveis de ambiente
 3. Revise os [logs de deploy do Vercel](https://vercel.com/dashboard)
-4. Abra uma issue com informações detalhadas
+4. Abra uma issue **em português** com informações detalhadas
 
 ## 🙏 Agradecimentos
 
@@ -204,7 +248,6 @@ Se você encontrar algum problema:
 
 ### Próximas Funcionalidades
 - [ ] **Tema Escuro**: Implementar alternância entre temas claro e escuro
-- [ ] **Internacionalização**: Suporte para múltiplos idiomas
 - [ ] **Analytics**: Integração com Google Analytics ou Plausible
 - [ ] **Blog**: Seção de blog integrada com markdown
 - [ ] **Comentários**: Sistema de comentários para projetos
@@ -222,11 +265,11 @@ Se você encontrar algum problema:
 
 ## 📚 Documentação Adicional
 
-- [Guia de Configuração](docs/SETUP.md)
+- [Guia de Configuração](docs/CONFIGURACAO.md)
 - [Guia de Deploy](docs/DEPLOYMENT.md)
-- [Guia de Contribuição](docs/CONTRIBUTING.md)
-- [Troubleshooting](docs/TROUBLESHOOTING.md)
-- [API Reference](docs/API.md)
+- [Guia de Contribuição](docs/CONTRIBUICAO.md)
+- [Solução de Problemas](docs/SOLUCAO-PROBLEMAS.md)
+- [Referência da API](docs/API.md)
 
 ## 🌟 Showcase
 
@@ -242,10 +285,12 @@ Veja exemplos de portfólios criados com este template:
 ![GitHub forks](https://img.shields.io/github/forks/seuusuario/portfolio-github?style=social)
 ![GitHub issues](https://img.shields.io/github/issues/seuusuario/portfolio-github)
 ![GitHub license](https://img.shields.io/github/license/seuusuario/portfolio-github)
+![Idioma](https://img.shields.io/badge/Idioma-Português%20BR-green)
 
 ---
 
 <div align="center">
   <p>Feito com ❤️ por <a href="https://github.com/meuphilim">@meuphilim</a></p>
   <p>Se este projeto te ajudou, considere dar uma ⭐!</p>
+  <p><strong>🇧🇷 Orgulhosamente desenvolvido em português brasileiro</strong></p>
 </div>

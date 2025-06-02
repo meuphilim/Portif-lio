@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ NOME_PROJETO }} - Portfólio de {{ NOME_USUARIO_GITHUB }}</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.png">
+</head>
+<body>
+    <header class="cabecalho-projeto">
+        <div class="container">
+            <h1><a href="../index.html" class="link-voltar">← Voltar ao Portfólio Principal</a></h1>
+            <h2>{{ NOME_PROJETO }}</h2>
+            <div class="acoes-cabecalho-projeto">
+                <a href="{{ URL_PROJETO }}" target="_blank" class="btn btn-primario">Ver Código no GitHub</a>
+                {{ PLACEHOLDER_LINK_DEMO_PROJETO }}
+            </div>
+        </div>
+    </header>
+
+    <main class="container detalhe-projeto">
+        <section class="secao-visao-geral">
+            <h3>📋 Visão Geral</h3>
+            <p>{{ DESCRICAO_PROJETO }}</p>
+        </section>
+
+        <section class="secao-tecnologia">
+            <h3>🛠️ Tecnologias Utilizadas</h3>
+            <p><strong>Linguagem Principal:</strong> {{ LINGUAGEM_PROJETO }}</p>
+            <div class="container-topicos">
+                <strong>Tópicos/Habilidades:</strong> {{ TOPICOS_PROJETO }}
+            </div>
+        </section>
+
+        <section class="secao-detalhes">
+            <h3>📝 Detalhes Técnicos e Aprendizados</h3>
+            <p class="nota-preenchimento-manual"><em>Esta seção pode ser expandida com informações mais detalhadas sobre o projeto, editando o arquivo manualmente.</em></p>
+
+            <div class="subsecao-detalhe">
+                <h4>🎯 Objetivos do Projeto</h4>
+                <ul>
+                    <li><em>Descreva os principais objetivos e motivações para criar este projeto</em></li>
+                    <li><em>Explique qual problema ele resolve ou que necessidade atende</em></li>
+                </ul>
+            </div>
+
+            <div class="subsecao-detalhe">
+                <h4>🚧 Desafios Enfrentados</h4>
+                <ul>
+                    <li><em>Relate os principais desafios técnicos encontrados durante o desenvolvimento</em></li>
+                    <li><em>Explique como esses desafios foram superados</em></li>
+                </ul>
+            </div>
+
+            <div class="subsecao-detalhe">
+                <h4>🏗️ Arquitetura e Design</h4>
+                <ul>
+                    <li><em>Descreva as principais decisões de arquitetura</em></li>
+                    <li><em>Explique a estrutura do projeto e organização do código</em></li>
+                    <li><em>Mencione padrões de design utilizados</em></li>
+                </ul>
+            </div>
+
+            <div class="subsecao-detalhe">
+                <h4>📚 Aprendizados</h4>
+                <ul>
+                    <li><em>Liste as principais tecnologias aprendidas ou aprimoradas</em></li>
+                    <li><em>Descreva como este projeto contribuiu para seu crescimento profissional</em></li>
+                    <li><em>Mencione boas práticas implementadas</em></li>
+                </ul>
+            </div>
+
+            <div class="subsecao-detalhe">
+                <h4>🔮 Próximos Passos</h4>
+                <ul>
+                    <li><em>Liste melhorias planejadas para o futuro</em></li>
+                    <li><em>Mencione funcionalidades que podem ser adicionadas</em></li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="secao-midia">
+            <h3>📸 Screenshots e Demonstrações</h3>
+            <p class="nota-preenchimento-manual"><em>Adicione aqui screenshots, GIFs ou diagramas que demonstrem o projeto em funcionamento.</em></p>
+            <div class="galeria-midia">
+                <img src="https://via.placeholder.com/800x400?text={{ NOME_PROJETO }}" alt="Placeholder para Imagem do Projeto" class="img-placeholder">
+            </div>
+        </section>
+
+        <section class="secao-contribuir">
+            <h3>🤝 Como Contribuir</h3>
+            <p>Se você tem interesse em contribuir para este projeto:</p>
+            <ol>
+                <li>Faça um fork do repositório</li>
+                <li>Crie uma branch para sua feature (<code>git checkout -b feature/FuncionalidadeIncrivel</code>)</li>
+                <li>Commit suas mudanças (<code>git commit -m 'Adicionar FuncionalidadeIncrivel'</code>)</li>
+                <li>Push para a branch (<code>git push origin feature/FuncionalidadeIncrivel</code>)</li>
+                <li>Abra um Pull Request</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; ${new Date().getFullYear()} {{ NOME_USUARIO_GITHUB }}.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 
 export const dynamic = "force-static"
-export const revalidate = 3600 // Revalidate every hour
+export const revalidate = 3600 // Revalidar a cada hora
 
 interface Repository {
   id: number
@@ -23,21 +23,21 @@ interface ApiResponse {
   success: boolean
   count: number
   repos: Repository[]
-  auth: "token" | "public" | "fallback"
+  auth: "token" | "publico" | "fallback"
   error?: string
   message?: string
 }
 
-// Fallback data for when API is unavailable
+// Dados de fallback para quando a API não estiver disponível
 const FALLBACK_REPOS: Repository[] = [
   {
     id: 1,
-    name: "portfolio-generator",
-    description: "Automated GitHub portfolio generator with CI/CD deployment",
-    html_url: "https://github.com/meuphilim/portfolio-generator",
+    name: "gerador-portfolio",
+    description: "Gerador automatizado de portfólio GitHub com deploy CI/CD",
+    html_url: "https://github.com/meuphilim/gerador-portfolio",
     homepage: null,
     language: "TypeScript",
-    topics: ["portfolio", "github", "automation", "nextjs", "vercel"],
+    topics: ["portfolio", "github", "automacao", "nextjs", "vercel"],
     updated_at: new Date().toISOString(),
     stargazers_count: 0,
     forks_count: 0,
@@ -48,11 +48,11 @@ const FALLBACK_REPOS: Repository[] = [
   {
     id: 2,
     name: "octomind",
-    description: "Intelligent automation system for GitHub portfolios",
+    description: "Sistema inteligente de automação para portfólios GitHub",
     html_url: "https://github.com/meuphilim/octomind",
     homepage: null,
     language: "JavaScript",
-    topics: ["automation", "github-actions", "portfolio", "ci-cd"],
+    topics: ["automacao", "github-actions", "portfolio", "ci-cd"],
     updated_at: new Date().toISOString(),
     stargazers_count: 0,
     forks_count: 0,
@@ -77,12 +77,12 @@ async function fetchGitHubRepos(username: string, token?: string): Promise<Repos
       `https://api.github.com/users/${username}/repos?per_page=100&sort=updated&type=public`,
       {
         headers,
-        next: { revalidate: 3600 }, // Cache for 1 hour
+        next: { revalidate: 3600 }, // Cache por 1 hora
       },
     )
 
     if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status} ${response.statusText}`)
+      throw new Error(`Erro da API do GitHub: ${response.status} ${response.statusText}`)
     }
 
     const repos: Repository[] = await response.json()
@@ -90,7 +90,7 @@ async function fetchGitHubRepos(username: string, token?: string): Promise<Repos
       (repo) => !repo.fork && !repo.archived && !repo.private && repo.name && !repo.name.startsWith("."),
     )
   } catch (error) {
-    console.error("Error fetching GitHub repos:", error)
+    console.error("Erro ao buscar repositórios do GitHub:", error)
     throw error
   }
 }
@@ -100,32 +100,32 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
     const GITHUB_USERNAME = process.env.GITHUB_USERNAME || process.env.NEXT_PUBLIC_GITHUB_USERNAME || "meuphilim"
     const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 
-    console.log(`🔍 Fetching repositories for: ${GITHUB_USERNAME}`)
+    console.log(`🔍 Buscando repositórios para: ${GITHUB_USERNAME}`)
 
     try {
       const repos = await fetchGitHubRepos(GITHUB_USERNAME, GITHUB_TOKEN)
 
-      console.log(`📚 Found ${repos.length} repositories`)
+      console.log(`📚 Encontrados ${repos.length} repositórios`)
 
       return NextResponse.json({
         success: true,
         count: repos.length,
         repos,
-        auth: GITHUB_TOKEN ? "token" : "public",
+        auth: GITHUB_TOKEN ? "token" : "publico",
       })
     } catch (apiError) {
-      console.warn("⚠️ GitHub API failed, using fallback data")
+      console.warn("⚠️ API do GitHub falhou, usando dados de fallback")
 
       return NextResponse.json({
         success: true,
         count: FALLBACK_REPOS.length,
         repos: FALLBACK_REPOS,
         auth: "fallback",
-        error: apiError instanceof Error ? apiError.message : "Unknown error",
+        error: apiError instanceof Error ? apiError.message : "Erro desconhecido",
       })
     }
   } catch (error) {
-    console.error("❌ Critical error:", error)
+    console.error("❌ Erro crítico:", error)
 
     return NextResponse.json(
       {
@@ -133,10 +133,10 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
         count: FALLBACK_REPOS.length,
         repos: FALLBACK_REPOS,
         auth: "fallback",
-        error: "Failed to fetch repositories",
-        message: error instanceof Error ? error.message : "Unknown error",
+        error: "Falha ao buscar repositórios",
+        message: error instanceof Error ? error.message : "Erro desconhecido",
       },
-      { status: 200 }, // Return 200 to avoid build failures
+      { status: 200 }, // Retornar 200 para evitar falhas de build
     )
   }
 }

@@ -2,66 +2,73 @@
 
 import fs from "fs/promises"
 
-const REQUIRED_FILES = ["package.json", "next.config.js", "vercel.json", ".gitignore", ".env.example", "tsconfig.json"]
+const ARQUIVOS_OBRIGATORIOS = [
+  "package.json",
+  "next.config.js",
+  "vercel.json",
+  ".gitignore",
+  ".env.example",
+  "tsconfig.json",
+]
 
-const REQUIRED_DIRS = ["app", ".github/workflows", "scripts"]
+const DIRETORIOS_OBRIGATORIOS = ["app", ".github/workflows", "scripts"]
 
-const REQUIRED_ENV_VARS = ["GITHUB_USERNAME", "NEXT_PUBLIC_GITHUB_USERNAME"]
+const VARIAVEIS_ENV_OBRIGATORIAS = ["GITHUB_USERNAME", "NEXT_PUBLIC_GITHUB_USERNAME"]
 
-async function checkFile(filePath) {
+async function verificarArquivo(caminhoArquivo) {
   try {
-    await fs.access(filePath)
+    await fs.access(caminhoArquivo)
     return true
   } catch {
     return false
   }
 }
 
-async function checkDirectory(dirPath) {
+async function verificarDiretorio(caminhoDiretorio) {
   try {
-    const stats = await fs.stat(dirPath)
+    const stats = await fs.stat(caminhoDiretorio)
     return stats.isDirectory()
   } catch {
     return false
   }
 }
 
-async function verifySetup() {
-  console.log("🔍 Verifying project setup...\n")
+async function verificarConfiguracao() {
+  console.log("🔍 Verificando configuração do projeto...\n")
 
-  // Check required files
-  console.log("📁 Checking required files:")
-  for (const file of REQUIRED_FILES) {
-    const exists = await checkFile(file)
-    console.log(`  ${exists ? "✅" : "❌"} ${file}`)
+  // Verificar arquivos obrigatórios
+  console.log("📁 Verificando arquivos obrigatórios:")
+  for (const arquivo of ARQUIVOS_OBRIGATORIOS) {
+    const existe = await verificarArquivo(arquivo)
+    console.log(`  ${existe ? "✅" : "❌"} ${arquivo}`)
   }
 
-  // Check required directories
-  console.log("\n📂 Checking required directories:")
-  for (const dir of REQUIRED_DIRS) {
-    const exists = await checkDirectory(dir)
-    console.log(`  ${exists ? "✅" : "❌"} ${dir}`)
+  // Verificar diretórios obrigatórios
+  console.log("\n📂 Verificando diretórios obrigatórios:")
+  for (const diretorio of DIRETORIOS_OBRIGATORIOS) {
+    const existe = await verificarDiretorio(diretorio)
+    console.log(`  ${existe ? "✅" : "❌"} ${diretorio}`)
   }
 
-  // Check environment variables
-  console.log("\n🌍 Checking environment variables:")
-  for (const envVar of REQUIRED_ENV_VARS) {
-    const value = process.env[envVar]
-    if (value) {
-      console.log(`  ✅ ${envVar}: ${value}`)
+  // Verificar variáveis de ambiente
+  console.log("\n🌍 Verificando variáveis de ambiente:")
+  for (const varEnv of VARIAVEIS_ENV_OBRIGATORIAS) {
+    const valor = process.env[varEnv]
+    if (valor) {
+      console.log(`  ✅ ${varEnv}: ${valor}`)
     } else {
-      console.log(`  ⚠️ ${envVar}: not configured`)
+      console.log(`  ⚠️ ${varEnv}: não configurado`)
     }
   }
 
-  // Test GitHub API
-  console.log("\n🐙 Testing GitHub API:")
+  // Testar API do GitHub
+  console.log("\n🐙 Testando API do GitHub:")
   try {
-    const username = process.env.GITHUB_USERNAME || process.env.NEXT_PUBLIC_GITHUB_USERNAME || "meuphilim"
+    const nomeUsuario = process.env.GITHUB_USERNAME || process.env.NEXT_PUBLIC_GITHUB_USERNAME || "meuphilim"
     const token = process.env.GITHUB_TOKEN
 
     const headers = {
-      "User-Agent": `${username}-portfolio-verify`,
+      "User-Agent": `${nomeUsuario}-portfolio-verificar`,
       Accept: "application/vnd.github.v3+json",
     }
 
@@ -69,43 +76,43 @@ async function verifySetup() {
       headers.Authorization = `Bearer ${token}`
     }
 
-    const response = await fetch(`https://api.github.com/users/${username}`, { headers })
+    const response = await fetch(`https://api.github.com/users/${nomeUsuario}`, { headers })
 
     if (response.ok) {
-      const user = await response.json()
-      console.log(`  ✅ User found: ${user.name || user.login}`)
-      console.log(`  ✅ Public repos: ${user.public_repos}`)
-      console.log(`  ✅ Authentication: ${token ? "Token" : "Public"}`)
+      const usuario = await response.json()
+      console.log(`  ✅ Usuário encontrado: ${usuario.name || usuario.login}`)
+      console.log(`  ✅ Repositórios públicos: ${usuario.public_repos}`)
+      console.log(`  ✅ Autenticação: ${token ? "Token" : "Pública"}`)
     } else {
-      console.log(`  ❌ API error: ${response.status} ${response.statusText}`)
+      console.log(`  ❌ Erro da API: ${response.status} ${response.statusText}`)
     }
   } catch (error) {
-    console.log(`  ❌ API test failed: ${error.message}`)
+    console.log(`  ❌ Teste da API falhou: ${error.message}`)
   }
 
-  // Check package.json scripts
-  console.log("\n📦 Checking package.json scripts:")
+  // Verificar scripts do package.json
+  console.log("\n📦 Verificando scripts do package.json:")
   try {
     const packageJson = JSON.parse(await fs.readFile("package.json", "utf8"))
-    const requiredScripts = ["dev", "build", "start", "lint"]
+    const scriptsObrigatorios = ["dev", "build", "start", "lint"]
 
-    for (const script of requiredScripts) {
+    for (const script of scriptsObrigatorios) {
       if (packageJson.scripts && packageJson.scripts[script]) {
         console.log(`  ✅ ${script}: ${packageJson.scripts[script]}`)
       } else {
-        console.log(`  ❌ ${script}: missing`)
+        console.log(`  ❌ ${script}: ausente`)
       }
     }
   } catch (error) {
-    console.log(`  ❌ Error reading package.json: ${error.message}`)
+    console.log(`  ❌ Erro ao ler package.json: ${error.message}`)
   }
 
-  console.log("\n✅ Setup verification completed!")
-  console.log("\n🎯 Next steps:")
-  console.log("1. Configure GitHub repository secrets")
-  console.log("2. Enable GitHub Pages in repository settings")
-  console.log("3. Configure Vercel project settings")
-  console.log("4. Push changes to trigger workflows")
+  console.log("\n✅ Verificação da configuração concluída!")
+  console.log("\n🎯 Próximos passos:")
+  console.log("1. Configurar secrets do repositório GitHub")
+  console.log("2. Habilitar GitHub Pages nas configurações do repositório")
+  console.log("3. Configurar configurações do projeto Vercel")
+  console.log("4. Fazer push das alterações para ativar workflows")
 }
 
-verifySetup().catch(console.error)
+verificarConfiguracao().catch(console.error)
