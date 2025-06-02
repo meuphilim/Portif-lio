@@ -14,9 +14,9 @@ jobs:
 
       - name: Configurar Node.js
         uses: actions/setup-node@v4
+      cache-dependency-path: "**/package-lock.json"
         with:
           node-version: '18'
-          cache: 'npm'
 
       - name: Instalar dependências
         run: npm ci
