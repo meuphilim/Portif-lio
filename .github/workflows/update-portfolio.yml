@@ -4,48 +4,149 @@ on:
   schedule:
     # Executa a cada 12 horas (00:00 e 12:00 UTC)
     - cron: '0 0,12 * * *'
-
-  # Permite execução manual via GitHub
   workflow_dispatch:
+    # Permite execução manual
+  push:
+    branches: [ main ]
+    paths:
+      - 'update_catalog.js'
+      - 'package.json'
+      - '.github/workflows/update-portfolio.yml'
 
 jobs:
-  update-portfolio:
+  update-and-deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout do repositório
-        uses: actions/checkout@v3
+    - name: 📥 Checkout do código
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
+    - name: 🟢 Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        # Remover cache até termos um lock file
+        # cache: 'npm'
 
-      - name: Instalar dependências
-        run: |
-          npm ci || npm install
+    - name: 📦 Instalar dependências
+      run: |
+        echo "📦 Instalando dependências..."
+        npm install
+        echo "✅ Dependências instaladas com sucesso"
 
-      - name: Gerar portfólio atualizado
-        run: node update_catalog.js
-        env:
-          GH_USERNAME: ${{ secrets.GITHUB_USERNAME }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: 🔍 Verificar ambiente
+      run: |
+        echo "🔍 Verificando ambiente..."
+        echo "Node version: $(node --version)"
+        echo "NPM version: $(npm --version)"
+        echo "Working directory: $(pwd)"
+        echo "Files in directory:"
+        ls -la
+        echo "Environment variables:"
+        echo "GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME || 'meuphilim' }}"
+        echo "GITHUB_TOKEN configured: ${{ secrets.GITHUB_TOKEN != '' }}"
 
-      - name: Verificar alterações no repositório
-        id: verify_changes
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            echo "changes=true" >> $GITHUB_OUTPUT
+    - name: 🚀 Gerar portfólio estático
+      env:
+        GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME || 'meuphilim' }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_ACTIONS: true
+      run: |
+        echo "🚀 Iniciando geração do portfólio..."
+        node update_catalog.js
+        echo "✅ Portfólio gerado com sucesso"
+
+    - name: 📁 Verificar arquivos gerados
+      run: |
+        echo "📁 Verificando arquivos gerados..."
+        if [ -d "build" ]; then
+          echo "✅ Diretório build encontrado"
+          echo "Conteúdo do build:"
+          ls -la build/
+          if [ -f "build/index.html" ]; then
+            echo "✅ index.html gerado com sucesso"
+            echo "Tamanho do arquivo: $(wc -c < build/index.html) bytes"
           else
-            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "❌ index.html não encontrado"
+            exit 1
           fi
+        else
+          echo "❌ Diretório build não encontrado"
+          exit 1
+        fi
 
-      - name: Commit e push das alterações
-        if: steps.verify_changes.outputs.changes == 'true'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "chore: atualizar portfólio automaticamente [skip ci]"
+    - name: 🔧 Configurar Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+    - name: 📤 Commit e push das alterações
+      run: |
+        echo "📤 Verificando se há alterações para commit..."
+        git add build/ || true
+        
+        if git diff --staged --quiet; then
+          echo "ℹ️ Nenhuma alteração detectada no portfólio"
+        else
+          echo "📝 Alterações detectadas, fazendo commit..."
+          git commit -m "🤖 Atualização automática do portfólio - $(date '+%Y-%m-%d %H:%M:%S')"
           git push
+          echo "✅ Alterações enviadas com sucesso"
+        fi
+
+    - name: 🌐 Deploy para GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./build
+        force_orphan: true
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+        commit_message: '🚀 Deploy automático do portfólio - ${{ github.sha }}'
+
+    - name: 🔧 Deploy para Vercel
+      if: github.ref == 'refs/heads/main'
+      env:
+        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      run: |
+        echo "🔧 Iniciando deploy para Vercel..."
+        
+        # Verificar se as variáveis estão configuradas
+        if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+          echo "⚠️ Variáveis do Vercel não configuradas, pulando deploy"
+          exit 0
+        fi
+        
+        # Instalar Vercel CLI
+        npm install -g vercel@latest
+        
+        # Fazer deploy
+        echo "🚀 Fazendo deploy para Vercel..."
+        vercel deploy --prod --token="$VERCEL_TOKEN" --yes
+        echo "✅ Deploy para Vercel concluído"
+
+    - name: 📊 Relatório final
+      if: always()
+      run: |
+        echo "📊 Relatório Final da Execução"
+        echo "================================"
+        echo "✅ Workflow executado com sucesso"
+        echo "📅 Data/Hora: $(date)"
+        echo "🔗 Commit: ${{ github.sha }}"
+        echo "🌿 Branch: ${{ github.ref }}"
+        
+        if [ -f "build/index.html" ]; then
+          echo "📄 Portfólio gerado: ✅"
+          echo "📏 Tamanho: $(wc -c < build/index.html) bytes"
+        else
+          echo "📄 Portfólio gerado: ❌"
+        fi
+        
+        echo "🌐 URLs de acesso:"
+        echo "   GitHub Pages: https://${{ github.repository_owner }}.github.io/Portifolio"
+        echo "   Vercel: https://portfolio-github.vercel.app"

@@ -1,0 +1,67 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+# Configurar permissões para GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Permitir apenas uma execução simultânea
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v4
+
+    - name: 🟢 Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        # Sem cache até termos lock file
+
+    - name: 📦 Instalar dependências
+      run: npm install
+
+    - name: 🚀 Gerar site estático
+      env:
+        GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME || 'meuphilim' }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_ACTIONS: true
+      run: |
+        echo "🚀 Gerando site estático..."
+        node update_catalog.js
+        echo "✅ Site gerado com sucesso"
+
+    - name: 📁 Verificar build
+      run: |
+        if [ ! -d "build" ] || [ ! -f "build/index.html" ]; then
+          echo "❌ Erro: Arquivos de build não encontrados"
+          exit 1
+        fi
+        echo "✅ Build verificado com sucesso"
+
+    - name: 🔧 Configurar Pages
+      uses: actions/configure-pages@v4
+
+    - name: 📤 Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './build'
+
+    - name: 🚀 Deploy para Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
