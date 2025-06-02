@@ -1,201 +1,251 @@
-# 🚀 Automated GitHub Portfolio
+# 🚀 Portfólio GitHub Automatizado
 
-A modern, responsive portfolio website that automatically generates and updates from your GitHub repositories using CI/CD pipelines.
+Um site de portfólio moderno e responsivo que gera e atualiza automaticamente a partir dos seus repositórios GitHub usando pipelines de CI/CD.
 
-## ✨ Features
+## ✨ Funcionalidades
 
-- 📊 **Automatic repository listing** from GitHub API
-- 🎨 **Responsive design** with modern UI/UX
-- 📈 **Language statistics** with visual charts
-- 🔄 **Automated updates** every 12 hours via GitHub Actions
-- 🌐 **Dual deployment** to GitHub Pages and Vercel
-- 🏷️ **Repository badges and topics** display
-- 🔗 **Live demo links** when available
-- 🛡️ **Error handling** with fallback data
-- ⚡ **Performance optimized** with static generation
+- 📊 **Listagem automática de repositórios** via API do GitHub
+- 🎨 **Design responsivo** com UI/UX moderna
+- 📈 **Estatísticas de linguagens** com gráficos visuais
+- 🔄 **Atualizações automáticas** a cada 12 horas via GitHub Actions
+- 🌐 **Deploy duplo** para GitHub Pages e Vercel
+- 🏷️ **Exibição de badges e tópicos** dos repositórios
+- 🔗 **Links para demos ao vivo** quando disponíveis
+- 🛡️ **Tratamento de erros** com dados de fallback
+- ⚡ **Otimizado para performance** com geração estática
 
-## 🛠️ Tech Stack
+## 🛠️ Stack Tecnológica
 
-- **Framework**: Next.js 14 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Deployment**: Vercel + GitHub Pages
+- **Framework**: Next.js 14 com App Router
+- **Linguagem**: TypeScript
+- **Estilização**: Tailwind CSS
+- **Deploy**: Vercel + GitHub Pages
 - **CI/CD**: GitHub Actions
 - **API**: GitHub REST API v3
 
-## 🚀 Quick Start
+## 🚀 Início Rápido
 
-### 1. Clone and Install
+### 1. Clonar e Instalar
 
-\`\`\`bash
-git clone https://github.com/yourusername/portfolio-github.git
+```bash
+git clone https://github.com/seuusuario/portfolio-github.git
 cd portfolio-github
 npm ci
-\`\`\`
+```
 
-### 2. Environment Setup
+### 2. Configuração do Ambiente
 
-\`\`\`bash
+```bash
 cp .env.example .env.local
-# Edit .env.local with your GitHub username and token
-\`\`\`
+# Edite .env.local com seu nome de usuário e token do GitHub
+```
 
-### 3. Local Development
+### 3. Desenvolvimento Local
 
-\`\`\`bash
+```bash
 npm run dev
-# Open http://localhost:3000
-\`\`\`
+# Abra http://localhost:3000
+```
 
-### 4. Build and Deploy
+### 4. Build e Deploy
 
-\`\`\`bash
-npm run build  # Build for production
-npm run start  # Start production server
-\`\`\`
+```bash
+npm run build  # Build para produção
+npm run start  # Iniciar servidor de produção
+```
 
-## ⚙️ Configuration
+## ⚙️ Configuração
 
-### Environment Variables
+### Variáveis de Ambiente
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `GITHUB_USERNAME` | Your GitHub username | ✅ |
-| `NEXT_PUBLIC_GITHUB_USERNAME` | Public GitHub username | ✅ |
-| `GITHUB_TOKEN` | GitHub Personal Access Token | ⚠️ Recommended |
-| `VERCEL_TOKEN` | Vercel deployment token | 🔧 For CI/CD |
-| `VERCEL_ORG_ID` | Vercel organization ID | 🔧 For CI/CD |
-| `VERCEL_PROJECT_ID` | Vercel project ID | 🔧 For CI/CD |
+| Variável | Descrição | Obrigatório |
+|----------|-----------|-------------|
+| `GITHUB_USERNAME` | Seu nome de usuário do GitHub | ✅ |
+| `NEXT_PUBLIC_GITHUB_USERNAME` | Nome de usuário público do GitHub | ✅ |
+| `GITHUB_TOKEN` | Token de Acesso Pessoal do GitHub | ⚠️ Recomendado |
+| `VERCEL_TOKEN` | Token de deploy do Vercel | 🔧 Para CI/CD |
+| `VERCEL_ORG_ID` | ID da organização Vercel | 🔧 Para CI/CD |
+| `VERCEL_PROJECT_ID` | ID do projeto Vercel | 🔧 Para CI/CD |
 
-### GitHub Repository Secrets
+### Secrets do Repositório GitHub
 
-Configure these in your repository settings under **Settings > Secrets and variables > Actions**:
+Configure estes nas configurações do seu repositório em **Settings > Secrets and variables > Actions**:
 
-- `GITHUB_TOKEN`: Personal access token with `public_repo` scope
-- `VERCEL_TOKEN`: Vercel API token
-- `VERCEL_ORG_ID`: Your Vercel organization ID
-- `VERCEL_PROJECT_ID`: Your Vercel project ID
+- `GITHUB_TOKEN`: Token de acesso pessoal com escopo `public_repo`
+- `VERCEL_TOKEN`: Token da API do Vercel
+- `VERCEL_ORG_ID`: ID da sua organização Vercel
+- `VERCEL_PROJECT_ID`: ID do seu projeto Vercel
 
-## 🔄 Automated Workflows
+## 🔄 Workflows Automatizados
 
-### 1. Continuous Integration (`ci.yml`)
-- **Triggers**: Push to main/develop, Pull requests
-- **Actions**: Lint, type check, build validation, tests
-- **Duration**: ~3-5 minutes
+### 1. Integração Contínua (`ci.yml`)
+- **Gatilhos**: Push para main/develop, Pull requests
+- **Ações**: Lint, verificação de tipos, validação de build, testes
+- **Duração**: ~3-5 minutos
 
-### 2. Vercel Deployment (`deploy-vercel.yml`)
-- **Triggers**: Push to main (excluding docs)
-- **Actions**: Build and deploy to Vercel production
-- **Duration**: ~2-3 minutes
+### 2. Deploy Vercel (`deploy-vercel.yml`)
+- **Gatilhos**: Push para main (excluindo docs)
+- **Ações**: Build e deploy para produção Vercel
+- **Duração**: ~2-3 minutos
 
-### 3. Scheduled Updates (`scheduled-update.yml`)
-- **Triggers**: Every 12 hours (00:00, 12:00 UTC)
-- **Actions**: Update portfolio data, deploy to GitHub Pages
-- **Duration**: ~2-3 minutes
+### 3. Atualizações Agendadas (`scheduled-update.yml`)
+- **Gatilhos**: A cada 12 horas (00:00, 12:00 UTC)
+- **Ações**: Atualizar dados do portfólio, deploy para GitHub Pages
+- **Duração**: ~2-3 minutos
 
-## 📊 Project Structure
+## 📊 Estrutura do Projeto
 
-\`\`\`
+```
 portfolio-github/
-├── 📁 .github/workflows/     # GitHub Actions workflows
+├── 📁 .github/workflows/     # Workflows do GitHub Actions
 ├── 📁 app/                   # Next.js App Router
-│   ├── 📁 api/              # API routes
-│   ├── 📄 layout.tsx        # Root layout
-│   ├── 📄 page.tsx          # Main page
-│   └── 📄 globals.css       # Global styles
-├── 📁 scripts/              # Utility scripts
-├── 📄 .env.example          # Environment variables template
-├── 📄 .gitignore           # Git ignore rules
-├── 📄 next.config.js       # Next.js configuration
-├── 📄 package.json         # Dependencies and scripts
-├── 📄 tailwind.config.js   # Tailwind CSS configuration
-├── 📄 tsconfig.json        # TypeScript configuration
-└── 📄 vercel.json          # Vercel deployment configuration
-\`\`\`
+│   ├── 📁 api/              # Rotas da API
+│   ├── 📄 layout.tsx        # Layout raiz
+│   ├── 📄 page.tsx          # Página principal
+│   └── 📄 globals.css       # Estilos globais
+├── 📁 scripts/              # Scripts utilitários
+├── 📄 .env.example          # Template de variáveis de ambiente
+├── 📄 .gitignore           # Regras do Git ignore
+├── 📄 next.config.js       # Configuração do Next.js
+├── 📄 package.json         # Dependências e scripts
+├── 📄 tailwind.config.js   # Configuração do Tailwind CSS
+├── 📄 tsconfig.json        # Configuração do TypeScript
+└── 📄 vercel.json          # Configuração de deploy Vercel
+```
 
-## 🔧 Development
+## 🔧 Desenvolvimento
 
-### Available Scripts
+### Scripts Disponíveis
 
-\`\`\`bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run lint:fix     # Fix ESLint issues
-npm run type-check   # Run TypeScript type checking
-npm run format       # Format code with Prettier
-npm run clean        # Clean build artifacts
-npm test             # Run tests
-\`\`\`
+```bash
+npm run dev          # Iniciar servidor de desenvolvimento
+npm run build        # Build para produção
+npm run start        # Iniciar servidor de produção
+npm run lint         # Executar ESLint
+npm run lint:fix     # Corrigir problemas do ESLint
+npm run type-check   # Executar verificação de tipos TypeScript
+npm run format       # Formatar código com Prettier
+npm run clean        # Limpar artefatos de build
+npm test             # Executar testes
+```
 
-### Code Quality
+### Qualidade de Código
 
-- **ESLint**: Code linting with Next.js recommended rules
-- **Prettier**: Code formatting with consistent style
-- **TypeScript**: Type safety and better developer experience
-- **Husky**: Git hooks for pre-commit validation
+- **ESLint**: Linting de código com regras recomendadas do Next.js
+- **Prettier**: Formatação de código com estilo consistente
+- **TypeScript**: Segurança de tipos e melhor experiência de desenvolvimento
+- **Husky**: Git hooks para validação pré-commit
 
-## 🚀 Deployment
+## 🚀 Deploy
 
-### Automatic Deployment
+### Deploy Automático
 
-The project automatically deploys to both platforms:
+O projeto faz deploy automaticamente para ambas as plataformas:
 
-1. **GitHub Pages**: Static site at `https://yourusername.github.io/portfolio-github`
-2. **Vercel**: Dynamic site at `https://portfolio-github-yourusername.vercel.app`
+1. **GitHub Pages**: Site estático em `https://seuusuario.github.io/portfolio-github`
+2. **Vercel**: Site dinâmico em `https://portfolio-github-seuusuario.vercel.app`
 
-### Manual Deployment
+### Deploy Manual
 
-\`\`\`bash
-# Deploy to Vercel
+```bash
+# Deploy para Vercel
 npx vercel --prod
 
-# Generate static site
+# Gerar site estático
 npm run generate
-\`\`\`
+```
 
-## 🛡️ Error Handling
+## 🛡️ Tratamento de Erros
 
-The application includes comprehensive error handling:
+A aplicação inclui tratamento abrangente de erros:
 
-- **API Fallbacks**: Uses cached data when GitHub API is unavailable
-- **Rate Limiting**: Graceful handling of GitHub API rate limits
-- **Build Resilience**: Continues building even with API failures
-- **User Feedback**: Clear error messages and status indicators
+- **Fallbacks da API**: Usa dados em cache quando a API do GitHub não está disponível
+- **Limitação de Taxa**: Tratamento gracioso dos limites de taxa da API do GitHub
+- **Resiliência de Build**: Continua o build mesmo com falhas da API
+- **Feedback do Usuário**: Mensagens de erro claras e indicadores de status
 
 ## 📈 Performance
 
-- **Static Generation**: Pre-built pages for optimal performance
-- **Image Optimization**: Optimized GitHub avatars and assets
-- **Caching**: Strategic caching of API responses
-- **Bundle Analysis**: Optimized JavaScript bundles
-- **Core Web Vitals**: Optimized for Google's performance metrics
+- **Geração Estática**: Páginas pré-construídas para performance otimizada
+- **Otimização de Imagens**: Avatars e assets do GitHub otimizados
+- **Cache**: Cache estratégico de respostas da API
+- **Análise de Bundle**: Bundles JavaScript otimizados
+- **Core Web Vitals**: Otimizado para métricas de performance do Google
 
-## 🤝 Contributing
+## 🤝 Contribuindo
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Faça um fork do repositório
+2. Crie uma branch de feature (`git checkout -b feature/funcionalidade-incrivel`)
+3. Commit suas mudanças (`git commit -m 'Adicionar funcionalidade incrível'`)
+4. Push para a branch (`git push origin feature/funcionalidade-incrivel`)
+5. Abra um Pull Request
 
-## 📄 License
+## 📄 Licença
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-## 🆘 Support
+## 🆘 Suporte
 
-If you encounter any issues:
+Se você encontrar algum problema:
 
-1. Check the [GitHub Actions logs](../../actions)
-2. Verify your environment variables
-3. Review the [Vercel deployment logs](https://vercel.com/dashboard)
-4. Open an issue with detailed information
+1. Verifique os [logs do GitHub Actions](../../actions)
+2. Verifique suas variáveis de ambiente
+3. Revise os [logs de deploy do Vercel](https://vercel.com/dashboard)
+4. Abra uma issue com informações detalhadas
 
-## 🙏 Acknowledgments
+## 🙏 Agradecimentos
 
-- [Next.js](https://nextjs.org/) for the amazing framework
-- [Vercel](https://vercel.com/) for seamless deployment
-- [GitHub](https://github.com/) for the powerful API and Actions
-- [Tailwind CSS](https://tailwindcss.com/) for the utility-first styling
+- [Next.js](https://nextjs.org/) pelo framework incrível
+- [Vercel](https://vercel.com/) pelo deploy sem complicações
+- [GitHub](https://github.com/) pela API poderosa e Actions
+- [Tailwind CSS](https://tailwindcss.com/) pela estilização utility-first
+
+## 🎯 Roadmap
+
+### Próximas Funcionalidades
+- [ ] **Tema Escuro**: Implementar alternância entre temas claro e escuro
+- [ ] **Internacionalização**: Suporte para múltiplos idiomas
+- [ ] **Analytics**: Integração com Google Analytics ou Plausible
+- [ ] **Blog**: Seção de blog integrada com markdown
+- [ ] **Comentários**: Sistema de comentários para projetos
+- [ ] **PWA**: Transformar em Progressive Web App
+- [ ] **Busca**: Funcionalidade de busca nos projetos
+- [ ] **Filtros**: Filtros por linguagem, tópicos e data
+
+### Melhorias Técnicas
+- [ ] **Testes**: Implementar testes unitários e de integração
+- [ ] **Storybook**: Documentação de componentes
+- [ ] **Performance**: Otimizações adicionais de performance
+- [ ] **Acessibilidade**: Melhorias de acessibilidade (WCAG 2.1)
+- [ ] **SEO**: Otimizações avançadas de SEO
+- [ ] **Monitoramento**: Integração com Sentry ou similar
+
+## 📚 Documentação Adicional
+
+- [Guia de Configuração](docs/SETUP.md)
+- [Guia de Deploy](docs/DEPLOYMENT.md)
+- [Guia de Contribuição](docs/CONTRIBUTING.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [API Reference](docs/API.md)
+
+## 🌟 Showcase
+
+Veja exemplos de portfólios criados com este template:
+
+- [Exemplo 1](https://portfolio-exemplo1.vercel.app)
+- [Exemplo 2](https://portfolio-exemplo2.vercel.app)
+- [Exemplo 3](https://portfolio-exemplo3.vercel.app)
+
+## 📊 Estatísticas
+
+![GitHub stars](https://img.shields.io/github/stars/seuusuario/portfolio-github?style=social)
+![GitHub forks](https://img.shields.io/github/forks/seuusuario/portfolio-github?style=social)
+![GitHub issues](https://img.shields.io/github/issues/seuusuario/portfolio-github)
+![GitHub license](https://img.shields.io/github/license/seuusuario/portfolio-github)
+
+---
+
+<div align="center">
+  <p>Feito com ❤️ por <a href="https://github.com/meuphilim">@meuphilim</a></p>
+  <p>Se este projeto te ajudou, considere dar uma ⭐!</p>
+</div>
