@@ -29,12 +29,12 @@ Este projeto foi desenvolvido exclusivamente em **português brasileiro (pt-BR)*
 
 ### Estrutura de Tradução
 
-```
+\`\`\`
 lib/
 ├── i18n.ts              # Configurações de internacionalização
 └── messages/
     └── pt-BR.ts          # Mensagens em português brasileiro
-```
+\`\`\`
 
 ## 🛠️ Stack Tecnológica
 
@@ -50,32 +50,32 @@ lib/
 
 ### 1. Clonar e Instalar
 
-```bash
+\`\`\`bash
 git clone https://github.com/seuusuario/portfolio-github.git
 cd portfolio-github
 npm ci
-```
+\`\`\`
 
 ### 2. Configuração do Ambiente
 
-```bash
+\`\`\`bash
 cp .env.example .env.local
 # Edite .env.local com seu nome de usuário e token do GitHub
-```
+\`\`\`
 
 ### 3. Desenvolvimento Local
 
-```bash
+\`\`\`bash
 npm run dev
 # Abra http://localhost:3000
-```
+\`\`\`
 
 ### 4. Build e Deploy
 
-```bash
+\`\`\`bash
 npm run build  # Build para produção
 npm run start  # Iniciar servidor de produção
-```
+\`\`\`
 
 ## ⚙️ Configuração
 
@@ -121,7 +121,7 @@ Configure estes nas configurações do seu repositório em **Settings > Secrets 
 
 ## 📊 Estrutura do Projeto
 
-```
+\`\`\`
 portfolio-github/
 ├── 📁 .github/workflows/     # Workflows do GitHub Actions (pt-BR)
 ├── 📁 app/                   # Next.js App Router
@@ -141,13 +141,13 @@ portfolio-github/
 ├── 📄 tailwind.config.js   # Configuração do Tailwind CSS
 ├── 📄 tsconfig.json        # Configuração do TypeScript
 └── 📄 vercel.json          # Configuração de deploy Vercel
-```
+\`\`\`
 
 ## 🔧 Desenvolvimento
 
 ### Scripts Disponíveis
 
-```bash
+\`\`\`bash
 npm run dev          # Iniciar servidor de desenvolvimento
 npm run build        # Build para produção
 npm run start        # Iniciar servidor de produção
@@ -158,7 +158,7 @@ npm run format       # Formatar código com Prettier
 npm run gerar        # Gerar portfólio estático
 npm run limpar       # Limpar artefatos de build
 npm test             # Executar testes
-```
+\`\`\`
 
 ### Qualidade de Código
 
@@ -179,13 +179,13 @@ O projeto faz deploy automaticamente para ambas as plataformas:
 
 ### Deploy Manual
 
-```bash
+\`\`\`bash
 # Deploy para Vercel
 npx vercel --prod
 
 # Gerar site estático
 npm run gerar
-```
+\`\`\`
 
 ## 🛡️ Tratamento de Erros
 

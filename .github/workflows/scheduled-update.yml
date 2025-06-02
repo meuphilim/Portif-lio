@@ -1,94 +1,38 @@
-name: ⏰ Atualização Agendada do Portfólio
+name: Scheduled Update
 
 on:
   schedule:
-    # Executar a cada 12 horas às 00:00 e 12:00 UTC
-    - cron: '0 0,12 * * *'
-  workflow_dispatch:
-    inputs:
-      forcar_atualizacao:
-        description: 'Forçar atualização mesmo se nenhuma mudança for detectada'
-        required: false
-        default: 'false'
-        type: boolean
-
-concurrency:
-  group: atualizacao-agendada
-  cancel-in-progress: false
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
-  atualizar-portfolio:
-    name: 🔄 Atualizar Dados do Portfólio
+  update:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: 📥 Fazer checkout do repositório
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
 
-      - name: 🟢 Configurar Node.js
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
 
-      - name: 📦 Instalar dependências
-        run: npm ci --prefer-offline --no-audit
+      - name: Instalar dependências
+        run: npm ci
 
-      - name: 🔍 Verificar mudanças nos repositórios
-        id: verificar_mudancas
-        env:
-          GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME || 'meuphilim' }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run update script
         run: |
-          echo "🔍 Verificando mudanças nos repositórios..."
-          
-          # Obter contagem atual de repositórios e última atualização
-          CONTAGEM_ATUAL=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-            "https://api.github.com/users/$GITHUB_USERNAME" | \
-            jq -r '.public_repos // 0')
-          
-          echo "📊 Repositórios públicos atuais: $CONTAGEM_ATUAL"
-          echo "contagem_repos_atual=$CONTAGEM_ATUAL" >> $GITHUB_OUTPUT
-          
-          # Verificar se devemos forçar atualização
-          if [ "${{ github.event.inputs.forcar_atualizacao }}" = "true" ]; then
-            echo "🔄 Atualização forçada solicitada"
-            echo "deve_atualizar=true" >> $GITHUB_OUTPUT
-          else
-            echo "deve_atualizar=true" >> $GITHUB_OUTPUT
-          fi
+          # Add your update script here
+          # Example: npm run update
+          echo "Running update script..."
+          # Replace the following with your actual update command
+          echo "No update script defined yet."
 
-      - name: 🚀 Gerar portfólio atualizado
-        if: steps.verificar_mudancas.outputs.deve_atualizar == 'true'
-        env:
-          GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME || 'meuphilim' }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTIONS: true
+      - name: Commit and push changes
         run: |
-          echo "🚀 Gerando portfólio atualizado..."
-          npm run gerar
-          echo "✅ Portfólio atualizado com sucesso"
-
-      - name: 🌐 Deploy para GitHub Pages
-        if: steps.verificar_mudancas.outputs.deve_atualizar == 'true'
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
-          force_orphan: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: '⏰ Atualização agendada do portfólio - ${{ steps.verificar_mudancas.outputs.contagem_repos_atual }} repos'
-
-      - name: 📊 Resumo da atualização
-        if: always()
-        run: |
-          echo "📊 Resumo da Atualização Agendada"
-          echo "================================="
-          echo "📅 Timestamp: $(date)"
-          echo "📊 Contagem de repositórios: ${{ steps.verificar_mudancas.outputs.contagem_repos_atual }}"
-          echo "🔄 Atualização realizada: ${{ steps.verificar_mudancas.outputs.deve_atualizar }}"
-          echo "🌐 GitHub Pages: https://${{ github.repository_owner }}.github.io/Portifolio"
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add .
+          git commit -m "Scheduled update" || echo "No changes to commit"
+          git push origin main || echo "No changes to push"
