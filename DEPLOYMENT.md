@@ -5,8 +5,8 @@
 ### 1. Variáveis de Ambiente Configuradas
 
 **GitHub Repository Secrets:**
-- `GITHUB_USERNAME`: meuphilim ✅
-- `GITHUB_TOKEN`: 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 ✅
+- `GITHUB_USERNAME`:  ✅
+- `GITHUB_TOKEN`:  ✅
 
 **Environment Variables (Automáticas):**
 - `GITHUB_USERNAME`: Configurado via secrets ou repository owner
