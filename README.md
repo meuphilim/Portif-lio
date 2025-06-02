@@ -281,10 +281,10 @@ Veja exemplos de portfólios criados com este template:
 
 ## 📊 Estatísticas
 
-![GitHub stars](https://img.shields.io/github/stars/seuusuario/portfolio-github?style=social)
-![GitHub forks](https://img.shields.io/github/forks/seuusuario/portfolio-github?style=social)
-![GitHub issues](https://img.shields.io/github/issues/seuusuario/portfolio-github)
-![GitHub license](https://img.shields.io/github/license/seuusuario/portfolio-github)
+![GitHub stars](https://img.shields.io/github/stars/meuphilim/Portifolio?style=social)
+![GitHub forks](https://img.shields.io/github/forks/meuphilim/Portifolio?style=social)
+![GitHub issues](https://img.shields.io/github/issues/meuphilim/Portifolio)
+![GitHub license](https://img.shields.io/github/license/meuphilim/Portifolio)
 ![Idioma](https://img.shields.io/badge/Idioma-Português%20BR-green)
 
 ---
