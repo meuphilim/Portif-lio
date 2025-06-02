@@ -7,11 +7,6 @@
     { "src": "/api/projects/(.*)", "dest": "/api/projects/$1" },
     { "src": "/(.*)", "dest": "/$1" }
   ],
-  "functions": {
-    "api/generate.js": {
-      "maxDuration": 30
-    }
-  },
   "env": {
     "GITHUB_USERNAME": "meuphilim",
     "NEXT_PUBLIC_GITHUB_USERNAME": "meuphilim",
