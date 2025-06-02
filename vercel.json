@@ -4,7 +4,6 @@
   "outputDirectory": "out",
   "installCommand": "npm ci",
   "framework": null,
-  "functions": {},
   "headers": [
     {
       "source": "/(.*)",
