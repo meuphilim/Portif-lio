@@ -34,6 +34,8 @@ jobs:
         run: |
           echo "📦 Installing dependencies..."
           npm ci --prefer-offline --no-audit
+          # Instala o critters explicitamente para resolver o erro de build
+          npm install critters
           echo "✅ Dependencies installed"
 
       - name: 🔧 Validate environment variables
@@ -61,13 +63,28 @@ jobs:
           
           echo "✅ All required environment variables are set"
 
+      - name: 🛠️ Fix ESLint configuration
+        run: |
+          echo "🛠️ Checking ESLint configuration..."
+          # Verifica se existe configuração do ESLint e tenta corrigir
+          if [ -f ".eslintrc.json" ]; then
+            echo "🔍 ESLint config found, ensuring compatibility..."
+            npm install eslint@latest --save-dev
+          else
+            echo "ℹ️ No ESLint config found, skipping..."
+          fi
+
       - name: 🏗️ Build application
         env:
           GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME || 'meuphilim' }}
           NEXT_PUBLIC_GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME || 'meuphilim' }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Desativa telemetria para evitar mensagens no log
+          NEXT_TELEMETRY_DISABLED: 1
         run: |
           echo "🏗️ Building Next.js application..."
+          # Força a instalação de dependências opcionais
+          npx next telemetry disable
           npm run build
           echo "✅ Build completed successfully"
 
@@ -75,13 +92,16 @@ jobs:
         run: |
           echo "📊 Build Analysis"
           echo "================"
-          if [ -d "out" ]; then
+          if [ -d ".next" ]; then
+            echo "📁 Next.js build directory size: $(du -sh .next/ | cut -f1)"
+            echo "📄 Total files: $(find .next -type f | wc -l)"
+          elif [ -d "out" ]; then
             echo "📁 Output directory size: $(du -sh out/ | cut -f1)"
             echo "📄 Total files: $(find out -type f | wc -l)"
             echo "🗜️ Largest files:"
             find out -type f -exec ls -lh {} + | sort -k5 -hr | head -5
           else
-            echo "❌ Output directory not found"
+            echo "❌ No build output directory found"
             exit 1
           fi
 
@@ -93,11 +113,17 @@ jobs:
         run: |
           echo "🚀 Deploying to Vercel..."
           
-          # Install Vercel CLI
+          # Instala Vercel CLI globalmente
           npm install -g vercel@latest
           
-          # Deploy to production
-          vercel deploy --prod --token="$VERCEL_TOKEN" --yes
+          # Verifica se é uma implantação estática ou SSR
+          if [ -d "out" ]; then
+            echo "🔍 Detected static export, deploying with --prebuilt flag"
+            vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN" --yes
+          else
+            echo "🔍 Detected SSR deployment, building on Vercel"
+            vercel deploy --prod --token="$VERCEL_TOKEN" --yes
+          fi
           
           echo "✅ Deployment completed successfully"
 
@@ -106,8 +132,9 @@ jobs:
         run: |
           echo "📊 Deployment Summary"
           echo "===================="
-          echo "✅ Vercel deployment completed"
+          echo "🔄 Workflow status: ${{ job.status }}"
           echo "📅 Timestamp: $(date)"
           echo "🔗 Commit: ${{ github.sha }}"
           echo "🌿 Branch: ${{ github.ref }}"
           echo "🌐 Production URL: Check Vercel dashboard"
+          echo "🛠️ Build logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
