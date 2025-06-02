@@ -52,7 +52,7 @@ export default function RepositoryStatus({ repos, authStatus, diagnosticInfo }: 
                   : "✅ Conectado à API pública do GitHub"}
             </div>
           )}
-          {diagnosticInfo && <div className="mt-2 text-xs text-gray-500 max-w-md mx-auto">{diagnosticInfo}</div>}
+          
         </div>
       </div>
     </section>
