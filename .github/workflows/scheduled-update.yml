@@ -1,94 +1,44 @@
-name: ⏰ Scheduled Portfolio Update
+name: Atualização Agendada
 
 on:
   schedule:
-    # Run every 12 hours at 00:00 and 12:00 UTC
-    - cron: '0 0,12 * * *'
-  workflow_dispatch:
-    inputs:
-      force_update:
-        description: 'Force update even if no changes detected'
-        required: false
-        default: 'false'
-        type: boolean
-
-concurrency:
-  group: scheduled-update
-  cancel-in-progress: false
+    - cron: '0 0,12 * * *'  # Executa às 00:00 e 12:00 UTC
+  workflow_dispatch:  # Permite execução manual
 
 jobs:
-  update-portfolio:
-    name: 🔄 Update Portfolio Data
+  update:
+    name: Atualizar Dados do Portfólio
     runs-on: ubuntu-latest
-    
-    steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
 
-      - name: 🟢 Setup Node.js
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
 
-      - name: 📦 Install dependencies
-        run: npm ci --prefer-offline --no-audit
+      - name: Instalar dependências
+        run: npm ci || npm install
 
-      - name: 🔍 Check for repository changes
-        id: check_changes
+      - name: Atualizar catálogo de projetos
+        run: node update_catalog.js
         env:
-          GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME || 'meuphilim' }}
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME || github.repository_owner }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "🔍 Checking for repository changes..."
-          
-          # Get current repository count and last update
-          CURRENT_COUNT=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-            "https://api.github.com/users/$GITHUB_USERNAME" | \
-            jq -r '.public_repos // 0')
-          
-          echo "📊 Current public repositories: $CURRENT_COUNT"
-          echo "current_repo_count=$CURRENT_COUNT" >> $GITHUB_OUTPUT
-          
-          # Check if we should force update
-          if [ "${{ github.event.inputs.force_update }}" = "true" ]; then
-            echo "🔄 Force update requested"
-            echo "should_update=true" >> $GITHUB_OUTPUT
-          else
-            echo "should_update=true" >> $GITHUB_OUTPUT
-          fi
 
-      - name: 🚀 Generate updated portfolio
-        if: steps.check_changes.outputs.should_update == 'true'
-        env:
-          GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME || 'meuphilim' }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTIONS: true
+      - name: Verificar alterações
+        id: verify_changes
         run: |
-          echo "🚀 Generating updated portfolio..."
-          npm run generate
-          echo "✅ Portfolio updated successfully"
+          git diff --quiet || echo "changes=true" >> $GITHUB_OUTPUT
 
-      - name: 🌐 Deploy to GitHub Pages
-        if: steps.check_changes.outputs.should_update == 'true'
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
-          force_orphan: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: '⏰ Scheduled portfolio update - ${{ steps.check_changes.outputs.current_repo_count }} repos'
-
-      - name: 📊 Update summary
-        if: always()
+      - name: Commit e push se houver alterações
+        if: steps.verify_changes.outputs.changes == 'true'
         run: |
-          echo "📊 Scheduled Update Summary"
-          echo "=========================="
-          echo "📅 Timestamp: $(date)"
-          echo "📊 Repository count: ${{ steps.check_changes.outputs.current_repo_count }}"
-          echo "🔄 Update performed: ${{ steps.check_changes.outputs.should_update }}"
-          echo "🌐 GitHub Pages: https://${{ github.repository_owner }}.github.io/Portifolio"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "chore: atualização automática de dados [skip ci]"
+          git push

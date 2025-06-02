@@ -63,7 +63,7 @@
 ## 🚀 Processo de Deploy
 
 ### 1. Deploy Automático
-```bash
+\`\`\`bash
 # Qualquer push na branch main ativa automaticamente:
 git add .
 git commit -m "feat: nova funcionalidade"
@@ -74,10 +74,10 @@ git push origin main
 # 2. Deploy para Vercel
 # 3. Gerar site estático
 # 4. Deploy para GitHub Pages
-```
+\`\`\`
 
 ### 2. Deploy Manual
-```bash
+\`\`\`bash
 # Via GitHub Actions (manual)
 # 1. Ir para: https://github.com/meuphilim/seu-repo/actions
 # 2. Selecionar workflow desejado
@@ -85,7 +85,7 @@ git push origin main
 
 # Via Vercel CLI (local)
 npx vercel --prod
-```
+\`\`\`
 
 ### 3. Monitoramento
 - **GitHub Actions**: `https://github.com/meuphilim/seu-repo/actions`
@@ -95,7 +95,7 @@ npx vercel --prod
 ## 🔧 Comandos Úteis
 
 ### Desenvolvimento Local
-```bash
+\`\`\`bash
 # Instalar dependências
 npm install
 
@@ -107,10 +107,10 @@ npm run generate
 
 # Build Next.js
 npm run build
-```
+\`\`\`
 
 ### Vercel CLI
-```bash
+\`\`\`bash
 # Login no Vercel
 npx vercel login
 
@@ -125,10 +125,10 @@ npx vercel --prod
 
 # Ver logs
 npx vercel logs
-```
+\`\`\`
 
 ### GitHub CLI
-```bash
+\`\`\`bash
 # Ver workflows
 gh workflow list
 
@@ -140,7 +140,7 @@ gh run view [RUN_ID] --log
 
 # Executar workflow manualmente
 gh workflow run "Deploy Vercel Production"
-```
+\`\`\`
 
 ## 📊 Status dos Deploys
 
@@ -195,6 +195,6 @@ Todas as configurações necessárias foram aplicadas:
 - ✅ Fallbacks implementados
 
 O projeto está pronto para o primeiro deploy!
-```
+\`\`\`
 
 Vamos criar um script de verificação para testar se tudo está funcionando:
