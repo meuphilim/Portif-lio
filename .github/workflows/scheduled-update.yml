@@ -1,79 +1,79 @@
-name: ⏰ Atualização Agendada do Portfólio
+name: ⏰ Scheduled Portfolio Update
 
 on:
   schedule:
-    # Executar a cada 12 horas às 00:00 e 12:00 UTC
+    # Run every 12 hours at 00:00 and 12:00 UTC
     - cron: '0 0,12 * * *'
   workflow_dispatch:
     inputs:
-      forcar_atualizacao:
-        description: 'Forçar atualização mesmo se nenhuma mudança for detectada'
+      force_update:
+        description: 'Force update even if no changes detected'
         required: false
         default: 'false'
         type: boolean
 
 concurrency:
-  group: atualizacao-agendada
+  group: scheduled-update
   cancel-in-progress: false
 
 jobs:
-  atualizar-portfolio:
-    name: 🔄 Atualizar Dados do Portfólio
+  update-portfolio:
+    name: 🔄 Update Portfolio Data
     runs-on: ubuntu-latest
     
     steps:
-      - name: 📥 Fazer checkout do repositório
+      - name: 📥 Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: 🟢 Configurar Node.js
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
 
-      - name: 📦 Instalar dependências
+      - name: 📦 Install dependencies
         run: npm ci --prefer-offline --no-audit
 
-      - name: 🔍 Verificar mudanças nos repositórios
-        id: verificar_mudancas
+      - name: 🔍 Check for repository changes
+        id: check_changes
         env:
           GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME || 'meuphilim' }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "🔍 Verificando mudanças nos repositórios..."
+          echo "🔍 Checking for repository changes..."
           
-          # Obter contagem atual de repositórios e última atualização
-          CONTAGEM_ATUAL=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+          # Get current repository count and last update
+          CURRENT_COUNT=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
             "https://api.github.com/users/$GITHUB_USERNAME" | \
             jq -r '.public_repos // 0')
           
-          echo "📊 Repositórios públicos atuais: $CONTAGEM_ATUAL"
-          echo "contagem_repos_atual=$CONTAGEM_ATUAL" >> $GITHUB_OUTPUT
+          echo "📊 Current public repositories: $CURRENT_COUNT"
+          echo "current_repo_count=$CURRENT_COUNT" >> $GITHUB_OUTPUT
           
-          # Verificar se devemos forçar atualização
-          if [ "${{ github.event.inputs.forcar_atualizacao }}" = "true" ]; then
-            echo "🔄 Atualização forçada solicitada"
-            echo "deve_atualizar=true" >> $GITHUB_OUTPUT
+          # Check if we should force update
+          if [ "${{ github.event.inputs.force_update }}" = "true" ]; then
+            echo "🔄 Force update requested"
+            echo "should_update=true" >> $GITHUB_OUTPUT
           else
-            echo "deve_atualizar=true" >> $GITHUB_OUTPUT
+            echo "should_update=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: 🚀 Gerar portfólio atualizado
-        if: steps.verificar_mudancas.outputs.deve_atualizar == 'true'
+      - name: 🚀 Generate updated portfolio
+        if: steps.check_changes.outputs.should_update == 'true'
         env:
           GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME || 'meuphilim' }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTIONS: true
         run: |
-          echo "🚀 Gerando portfólio atualizado..."
-          npm run gerar
-          echo "✅ Portfólio atualizado com sucesso"
+          echo "🚀 Generating updated portfolio..."
+          npm run generate
+          echo "✅ Portfolio updated successfully"
 
-      - name: 🌐 Deploy para GitHub Pages
-        if: steps.verificar_mudancas.outputs.deve_atualizar == 'true'
+      - name: 🌐 Deploy to GitHub Pages
+        if: steps.check_changes.outputs.should_update == 'true'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -81,14 +81,14 @@ jobs:
           force_orphan: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: '⏰ Atualização agendada do portfólio - ${{ steps.verificar_mudancas.outputs.contagem_repos_atual }} repos'
+          commit_message: '⏰ Scheduled portfolio update - ${{ steps.check_changes.outputs.current_repo_count }} repos'
 
-      - name: 📊 Resumo da atualização
+      - name: 📊 Update summary
         if: always()
         run: |
-          echo "📊 Resumo da Atualização Agendada"
-          echo "================================="
+          echo "📊 Scheduled Update Summary"
+          echo "=========================="
           echo "📅 Timestamp: $(date)"
-          echo "📊 Contagem de repositórios: ${{ steps.verificar_mudancas.outputs.contagem_repos_atual }}"
-          echo "🔄 Atualização realizada: ${{ steps.verificar_mudancas.outputs.deve_atualizar }}"
+          echo "📊 Repository count: ${{ steps.check_changes.outputs.current_repo_count }}"
+          echo "🔄 Update performed: ${{ steps.check_changes.outputs.should_update }}"
           echo "🌐 GitHub Pages: https://${{ github.repository_owner }}.github.io/Portifolio"
