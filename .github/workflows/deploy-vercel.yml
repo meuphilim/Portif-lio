@@ -25,7 +25,7 @@ jobs:
           cache: 'npm'
           
       - name: 📦 Instalar dependências
-        run: npm ci --prefer-offline --no-audit --force
+        run: npm ci --prefer-offline --no-audit
         
       - name: 🔧 Verificar variáveis de ambiente
         run: |

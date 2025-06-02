@@ -23,7 +23,7 @@ jobs:
           cache: 'npm'
           
       - name: 📦 Instalar dependências
-        run: npm ci --prefer-offline --no-audit --force
+        run: npm ci --prefer-offline --no-audit
         
       - name: 📊 Atualizar dados dos repositórios
         run: node update_catalog.js
