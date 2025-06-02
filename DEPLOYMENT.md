@@ -35,7 +35,7 @@
 ## 🚀 Processo de Deploy
 
 ### 1. Deploy Automático
-\`\`\`bash
+```bash
 # Qualquer push na branch main ativa automaticamente:
 git add .
 git commit -m "feat: nova funcionalidade"
@@ -45,10 +45,10 @@ git push origin main
 # 1. Fazer build do Next.js (export estático)
 # 2. Deploy para GitHub Pages
 # 3. Atualizar dados dos repositórios
-\`\`\`
+```
 
 ### 2. Deploy Manual
-\`\`\`bash
+```bash
 # Via GitHub Actions (manual)
 # 1. Ir para: https://github.com/meuphilim/Portifolio/actions
 # 2. Selecionar workflow "Deploy to GitHub Pages"
@@ -57,7 +57,7 @@ git push origin main
 # Via linha de comando (local)
 npm run build
 # Arquivos gerados em ./out/
-\`\`\`
+```
 
 ### 3. Monitoramento
 - **GitHub Actions**: `https://github.com/meuphilim/Portifolio/actions`
@@ -67,7 +67,7 @@ npm run build
 ## 🔧 Comandos Úteis
 
 ### Desenvolvimento Local
-\`\`\`bash
+```bash
 # Instalar dependências
 npm install
 
@@ -82,10 +82,10 @@ npm run gerar
 
 # Limpar arquivos de build
 npm run limpar
-\`\`\`
+```
 
 ### GitHub CLI
-\`\`\`bash
+```bash
 # Ver workflows
 gh workflow list
 
@@ -97,7 +97,7 @@ gh run view [RUN_ID] --log
 
 # Executar workflow manualmente
 gh workflow run "Deploy to GitHub Pages"
-\`\`\`
+```
 
 ## 📊 Status dos Deploys
 
@@ -187,4 +187,4 @@ Para configurar um domínio personalizado:
 
 3. **Habilitar HTTPS**
    - GitHub Pages habilita automaticamente
-\`\`\`
+```
