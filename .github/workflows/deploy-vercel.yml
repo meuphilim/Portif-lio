@@ -35,7 +35,6 @@ jobs:
           echo "📦 Instalando dependências..."
           npm ci --prefer-offline --no-audit
           echo "✅ Dependências instaladas"
-
       - name: 🔧 Validar variáveis de ambiente
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -60,7 +59,6 @@ jobs:
           fi
           
           echo "✅ Todas as variáveis de ambiente obrigatórias estão configuradas"
-
       - name: 🏗️ Build da aplicação
         env:
           GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME || 'meuphilim' }}
@@ -70,7 +68,6 @@ jobs:
           echo "🏗️ Fazendo build da aplicação Next.js..."
           npm run build
           echo "✅ Build concluído com sucesso"
-
       - name: 📊 Análise do build
         run: |
           echo "📊 Análise do Build"
@@ -84,7 +81,6 @@ jobs:
             echo "❌ Diretório de saída não encontrado"
             exit 1
           fi
-
       - name: 🚀 Deploy para Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -100,7 +96,6 @@ jobs:
           vercel deploy --prod --token="$VERCEL_TOKEN" --yes
           
           echo "✅ Deployment concluído com sucesso"
-
       - name: 📊 Resumo do deployment
         if: always()
         run: |
