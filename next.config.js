@@ -2,63 +2,51 @@
 const nextConfig = {
   output: "export",
   trailingSlash: true,
-  skipTrailingSlashRedirect: true,
   distDir: "out",
-
-  // Disable image optimization for static export
+  
+  // Configuração de imagens para export estático
   images: {
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
+    ],
   },
 
-  // Environment variables
+  // Variáveis de ambiente
   env: {
     GITHUB_USERNAME: process.env.GITHUB_USERNAME || "meuphilim",
     NEXT_PUBLIC_GITHUB_USERNAME: process.env.NEXT_PUBLIC_GITHUB_USERNAME || "meuphilim",
   },
 
-  // Compiler options
+  // Opções do compilador
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
+    styledComponents: true,
   },
 
-  // ESLint configuration
+  // Configurações de build
   eslint: {
-    ignoreDuringBuilds: false,
+    ignoreDuringBuilds: false, 
   },
-
-  // TypeScript configuration
   typescript: {
     ignoreBuildErrors: false,
   },
 
-  // Experimental features
+  // Recursos experimentais
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ["lucide-react"],
+    webpackBuildWorker: true,
   },
 
-  // Headers for security
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "X-Frame-Options",
-            value: "DENY",
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
-          },
-        ],
-      },
-    ]
-  },
+  // Webpack customizado (opcional)
+  webpack: (config) => {
+    // Adicione plugins ou regras adicionais se necessário
+    return config;
+  }
 }
 
 module.exports = nextConfig
