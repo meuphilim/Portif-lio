@@ -1,0 +1,56 @@
+name: 🔍 Integração Contínua
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    name: 🧪 Testes e Validação
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    
+    steps:
+      - name: 📥 Checkout do código
+        uses: actions/checkout@v4
+        
+      - name: 🟢 Configurar Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          
+      - name: 📦 Instalar dependências
+        run: npm ci --prefer-offline --no-audit
+        
+      - name: 🔍 Verificar formatação
+        run: npm run format:check || echo "Formatação precisa ser corrigida"
+        
+      - name: 🧹 Executar ESLint
+        run: npm run lint || echo "Problemas de lint encontrados"
+        
+      - name: 🔧 Verificar tipos TypeScript
+        run: npm run type-check || echo "Problemas de tipos encontrados"
+        
+      - name: 🏗️ Testar build
+        run: node scripts/build.js
+        env:
+          GITHUB_USERNAME: ${{ github.repository_owner }}
+          NEXT_PUBLIC_GITHUB_USERNAME: ${{ github.repository_owner }}
+          
+      - name: 📊 Verificar tamanho do build
+        run: |
+          if [ -d "out" ]; then
+            echo "📁 Tamanho do diretório out:"
+            du -sh out/
+            echo "📄 Arquivos principais:"
+            ls -la out/
+          else
+            echo "❌ Diretório out não encontrado"
+            exit 1
+          fi

@@ -1,0 +1,61 @@
+name: 🔄 Atualização Agendada
+
+on:
+  schedule:
+    - cron: '0 6,18 * * *'  # 6:00 e 18:00 UTC (3:00 e 15:00 BRT)
+  workflow_dispatch:
+
+jobs:
+  update:
+    name: 📊 Atualizar Portfólio
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout do código
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: 🟢 Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: 📦 Instalar dependências
+        run: npm ci --prefer-offline --no-audit
+        
+      - name: 📊 Atualizar dados dos repositórios
+        run: node update_catalog.js
+        env:
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME || github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: 🔍 Verificar alterações
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "📊 Nenhuma alteração detectada"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "📊 Alterações detectadas:"
+            git diff --name-only
+          fi
+          
+      - name: 💾 Commit e push das alterações
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "🤖 Atualização automática do portfólio - $(date '+%Y-%m-%d %H:%M:%S')"
+          git push
+          
+      - name: 🏗️ Build e deploy
+        if: steps.changes.outputs.changed == 'true'
+        run: node scripts/build.js
+        env:
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME || github.repository_owner }}
+          NEXT_PUBLIC_GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME || github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
