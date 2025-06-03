@@ -16,6 +16,9 @@ const FALLBACK_REPOS: Repository[] = [
     updated_at: new Date().toISOString(),
     stargazers_count: 0,
     forks_count: 0,
+    owner: {
+      login: "meuphilim"
+    }
   },
   {
     id: 2,
@@ -28,7 +31,10 @@ const FALLBACK_REPOS: Repository[] = [
     updated_at: new Date().toISOString(),
     stargazers_count: 0,
     forks_count: 0,
-  },
+    owner: {
+      login: "meuphilim"
+    }
+  }
 ]
 
 export function usePortfolioData(): PortfolioData {

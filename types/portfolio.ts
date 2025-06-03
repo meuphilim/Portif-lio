@@ -9,6 +9,9 @@ export interface Repository {
   updated_at: string
   stargazers_count: number
   forks_count: number
+  owner: {
+  login: string
+  }
 }
 
 export interface ApiResponse {
