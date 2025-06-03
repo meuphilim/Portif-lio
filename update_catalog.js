@@ -11,6 +11,8 @@ const GITHUB_USERNAME =
   process.env.GITHUB_USERNAME || process.env.NEXT_PUBLIC_GITHUB_USERNAME || 'meuphilim';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const BUILD_DIR = process.env.BUILD_DIR || 'build';
+const CACHE_DIR = process.env.CACHE_DIR || '.cache';
+const CACHE_DURATION = parseInt(process.env.CACHE_DURATION) || 3600000; // 1 hora em ms
 const IS_GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === 'true';
 const IS_VERCEL = process.env.VERCEL === '1';
 
@@ -21,7 +23,47 @@ console.log(
 console.log('👤 Nome de usuário:', GITHUB_USERNAME);
 console.log('🔑 Token configurado:', GITHUB_TOKEN ? 'Sim' : 'Não');
 
-// Função para fazer requisições HTTP
+// Função para verificar cache
+function getCachedData(cacheKey) {
+  try {
+    const cacheFile = path.join(CACHE_DIR, `${cacheKey}.json`);
+    if (!fs.existsSync(cacheFile)) return null;
+    
+    const cached = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
+    const isExpired = Date.now() - cached.timestamp > CACHE_DURATION;
+    
+    if (isExpired) {
+      fs.unlinkSync(cacheFile);
+      return null;
+    }
+    
+    console.log(`✅ Usando dados em cache para ${cacheKey}`);
+    return cached.data;
+  } catch (error) {
+    console.warn(`⚠️ Erro ao ler cache ${cacheKey}:`, error.message);
+    return null;
+  }
+}
+
+// Função para salvar no cache
+function setCachedData(cacheKey, data) {
+  try {
+    if (!fs.existsSync(CACHE_DIR)) {
+      fs.mkdirSync(CACHE_DIR, { recursive: true });
+    }
+    
+    const cacheFile = path.join(CACHE_DIR, `${cacheKey}.json`);
+    const cacheData = {
+      timestamp: Date.now(),
+      data: data
+    };
+    
+    fs.writeFileSync(cacheFile, JSON.stringify(cacheData, null, 2));
+    console.log(`💾 Cache salvo para ${cacheKey}`);
+  } catch (error) {
+    console.warn(`⚠️ Erro ao salvar cache ${cacheKey}:`, error.message);
+  }
+}
 async function fetchWithFallback(url, options = {}) {
   try {
     const response = await fetch(url, options);
@@ -99,6 +141,17 @@ async function generatePortfolio() {
 
 // Função para buscar repositórios
 async function fetchRepositories() {
+  const cacheKey = `repos-${GITHUB_USERNAME}`;
+  
+  // Verificar cache primeiro
+  const cachedRepos = getCachedData(cacheKey);
+  if (cachedRepos) {
+    console.log(`📦 ${cachedRepos.length} repositórios carregados do cache`);
+    return cachedRepos;
+  }
+  
+  console.log('🔄 Cache não encontrado, buscando da API...');
+  
   const headers = {
     'User-Agent': `${GITHUB_USERNAME}-portfolio`,
     Accept: 'application/vnd.github.v3+json',
@@ -132,6 +185,14 @@ async function fetchRepositories() {
       break;
     }
     page++;
+    
+    // Pequeno delay entre requisições para evitar rate limit
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+
+  // Salvar no cache
+  if (allRepos.length > 0) {
+    setCachedData(cacheKey, allRepos);
   }
 
   return allRepos;
