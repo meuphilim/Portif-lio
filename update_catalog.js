@@ -1,5 +1,10 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Para suporte ao __filename e __dirname em ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Configurações
 const GITHUB_USERNAME =
@@ -304,11 +309,12 @@ async function generateFallbackPortfolio() {
 }
 
 // Executar se chamado diretamente
-if (require.main === module) {
+if (process.argv[1] === __filename) {
   generatePortfolio().catch((error) => {
     console.error('💥 Erro fatal:', error);
     process.exit(1);
   });
 }
 
-module.exports = { generatePortfolio };
+// Export para ES modules
+export { generatePortfolio };
