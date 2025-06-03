@@ -7,14 +7,16 @@ interface LanguagesSectionProps {
 
 export default function LanguagesSection({ repos }: LanguagesSectionProps) {
   // Calcular estatísticas de linguagens
-  const languageStats = repos.reduce((acc, repo) => {
-    const lang = repo.language || "Outros"
-    acc[lang] = (acc[lang] || 0) + 1
-    return acc
-  }, {} as Record<string, number>)
+  const languageStats = repos.reduce(
+    (acc, repo) => {
+      const lang = repo.language || "Outros"
+      acc[lang] = (acc[lang] || 0) + 1
+      return acc
+    },
+    {} as Record<string, number>,
+  )
 
   const totalRepos = repos.length
-
   const sortedLanguages = Object.entries(languageStats)
     .sort(([, countA], [, countB]) => countB - countA)
     .slice(0, 8)
@@ -49,25 +51,18 @@ export default function LanguagesSection({ repos }: LanguagesSectionProps) {
           {sortedLanguages.map(([language, count]) => {
             const percentage = totalRepos > 0 ? Math.round((count / totalRepos) * 100) : 0
             const color = languageColors[language] || languageColors.Outros
-            const logo = languageLogos[language] ? `&logo=${encodeURIComponent(languageLogos[language])}` : ""
-            const textColorParam = ["F7DF1E", "89E051"].includes(color) ? "&logoColor=black" : "&logoColor=white"
+            const logo = languageLogos[language] ? `&logo=${languageLogos[language]}` : ""
+            const textColor = ["F7DF1E", "89E051"].includes(color) ? "&logoColor=black" : ""
 
-            const labelText = encodeURIComponent(language)
-            const messageText = encodeURIComponent(`${count} projeto${count !== 1 ? "s" : ""} (${percentage}%)`)
-            const badgeUrl = `https://img.shields.io/badge/${labelText}-${messageText}-${color}?style=for-the-badge${logo}${textColorParam}`
+            const badgeUrl = `https://img.shields.io/badge/${encodeURIComponent(language)}-${count}_projeto${count !== 1 ? "s" : ""}_(${percentage}%25)-${color}?style=for-the-badge${logo}${textColor}`
 
             return (
               <img
                 key={language}
-                src={badgeUrl}
+                src={badgeUrl || "/placeholder.svg"}
                 alt={`${language} - ${count} projeto${count !== 1 ? "s" : ""} (${percentage}%)`}
-                title={`${language}: ${count} projeto${count !== 1 ? "s" : ""} (${percentage}%)`}
                 className="h-8 transition-transform hover:scale-105"
-                onError={(e) => {
-                  e.currentTarget.src =
-                    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E"
-                  e.currentTarget.alt = "Badge não disponível"
-                }}
+                title={`${language}: ${count} projeto${count !== 1 ? "s" : ""} (${percentage}%)`}
               />
             )
           })}
@@ -80,11 +75,11 @@ export default function LanguagesSection({ repos }: LanguagesSectionProps) {
               {sortedLanguages.map(([language, count]) => {
                 const percentage = (count / totalRepos) * 100
                 const color = colorMap[language] || colorMap.Outros
-
+                
                 return (
-                  <div
+                  <div 
                     key={language}
-                    className="h-full group relative"
+                    className="h-full relative group"
                     style={{
                       width: `${percentage}%`,
                       backgroundColor: `rgb(${color})`,
