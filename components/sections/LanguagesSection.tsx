@@ -119,7 +119,12 @@ const LanguagesSection: React.FC<LanguagesSectionProps> = ({ username }) => {
         <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto mb-6">
           {sortedLanguages.map(({ name, percentage }) => {
             const color = languageColors[name] || languageColors.Outros;
-            const badgeUrl = `https://img.shields.io/badge/${encodeURIComponent(name)}-${percentage}%25-${color}?style=for-the-badge&logoColor=white`;
+            // Garante que a porcentagem esteja formatada corretamente
+const labelText = encodeURIComponent(language); // Ex: JavaScript
+const messageText = encodeURIComponent(`${count} projeto${count !== 1 ? 's' : ''} (${percentage}%)`);
+const textColorParam = ["F7DF1E", "89E051"].includes(color) ? "&logoColor=black" : "&logoColor=white";
+const logoParam = languageLogos[language] ? `&logo=${encodeURIComponent(languageLogos[language])}` : '';
+const badgeUrl = `https://img.shields.io/badge/${labelText}-${messageText}-${color}?style=for-the-badge${logoParam}${textColorParam}`;
             return (
               <img
                 key={name}
