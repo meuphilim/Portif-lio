@@ -1,25 +1,25 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Configuração para export estático (GitHub Pages)
-  output: "export",
+  output: 'export',
 
   // Configurações específicas para GitHub Pages
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
 
   // Base path para GitHub Pages (se necessário)
-  basePath: process.env.NODE_ENV === "production" ? "/Portifolio" : "",
-  assetPrefix: process.env.NODE_ENV === "production" ? "/Portifolio/" : "",
+  basePath: process.env.NODE_ENV === 'production' ? '/Portifolio' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/Portifolio/' : '',
 
   // Configurações de imagem para export estático
   images: {
     unoptimized: true,
-    loader: "custom",
-    loaderFile: "./lib/imageLoader.js",
+    loader: 'custom',
+    loaderFile: './lib/imageLoader.js',
   },
 
   // Configurações de build
-  distDir: ".next",
+  distDir: '.next',
 
   // Configurações de TypeScript
   typescript: {
@@ -32,27 +32,27 @@ const nextConfig = {
   },
 
   // Headers de segurança (não aplicáveis no GitHub Pages, mas mantidos para referência)
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "X-Frame-Options",
-            value: "DENY",
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
-          },
-        ],
-      },
-    ]
-  },
+  // async headers() {
+  //   return [
+  //     {
+  //       source: '/(.*)',
+  //       headers: [
+  //         {
+  //           key: 'X-Frame-Options',
+  //           value: 'DENY',
+  //         },
+  //         {
+  //           key: 'X-Content-Type-Options',
+  //           value: 'nosniff',
+  //         },
+  //         {
+  //           key: 'Referrer-Policy',
+  //           value: 'origin-when-cross-origin',
+  //         },
+  //       ],
+  //     },
+  //   ];
+  // },
 
   // Configurações de webpack
   webpack: (config, { isServer }) => {
@@ -63,14 +63,14 @@ const nextConfig = {
         fs: false,
         net: false,
         tls: false,
-      }
+      };
     }
 
-    return config
+    return config;
   },
 
   // Configurações experimentais removidas para compatibilidade
   experimental: {},
-}
+};
 
-module.exports = nextConfig
+export default nextConfig;

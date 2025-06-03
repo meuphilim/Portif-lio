@@ -1,36 +1,36 @@
-const fs = require("fs")
-const path = require("path")
+const fs = require('fs');
+const path = require('path');
 
-console.log("🔄 Executando build de fallback...")
+console.log('🔄 Executando build de fallback...');
 
 try {
   // Criar diretório out se não existir
-  if (!fs.existsSync("out")) {
-    fs.mkdirSync("out", { recursive: true })
+  if (!fs.existsSync('out')) {
+    fs.mkdirSync('out', { recursive: true });
   }
 
   // Verificar se existe um build estático gerado pelo update_catalog.js
-  if (fs.existsSync("build")) {
-    console.log("📁 Copiando arquivos do diretório build...")
+  if (fs.existsSync('build')) {
+    console.log('📁 Copiando arquivos do diretório build...');
 
     // Copiar recursivamente
     function copyRecursive(src, dest) {
-      const stats = fs.statSync(src)
+      const stats = fs.statSync(src);
       if (stats.isDirectory()) {
         if (!fs.existsSync(dest)) {
-          fs.mkdirSync(dest, { recursive: true })
+          fs.mkdirSync(dest, { recursive: true });
         }
-        const files = fs.readdirSync(src)
+        const files = fs.readdirSync(src);
         files.forEach((file) => {
-          copyRecursive(path.join(src, file), path.join(dest, file))
-        })
+          copyRecursive(path.join(src, file), path.join(dest, file));
+        });
       } else {
-        fs.copyFileSync(src, dest)
+        fs.copyFileSync(src, dest);
       }
     }
 
-    copyRecursive("build", "out")
-    console.log("✅ Arquivos copiados com sucesso")
+    copyRecursive('build', 'out');
+    console.log('✅ Arquivos copiados com sucesso');
   } else {
     // Criar um index.html básico
     const basicHtml = `
@@ -60,26 +60,26 @@ try {
     </div>
 </body>
 </html>
-    `.trim()
+    `.trim();
 
-    fs.writeFileSync(path.join("out", "index.html"), basicHtml)
-    console.log("✅ index.html básico criado")
+    fs.writeFileSync(path.join('out', 'index.html'), basicHtml);
+    console.log('✅ index.html básico criado');
   }
 
   // Criar .nojekyll
-  fs.writeFileSync(path.join("out", ".nojekyll"), "")
+  fs.writeFileSync(path.join('out', '.nojekyll'), '');
 
   // Criar build-info.json
   const buildInfo = {
     timestamp: new Date().toISOString(),
-    build_type: "fallback",
+    build_type: 'fallback',
     node_version: process.version,
-    github_username: process.env.GITHUB_USERNAME || "meuphilim",
-  }
-  fs.writeFileSync(path.join("out", "build-info.json"), JSON.stringify(buildInfo, null, 2))
+    github_username: process.env.GITHUB_USERNAME || 'meuphilim',
+  };
+  fs.writeFileSync(path.join('out', 'build-info.json'), JSON.stringify(buildInfo, null, 2));
 
-  console.log("✅ Build de fallback concluído com sucesso!")
+  console.log('✅ Build de fallback concluído com sucesso!');
 } catch (error) {
-  console.error("❌ Erro no build de fallback:", error.message)
-  process.exit(1)
+  console.error('❌ Erro no build de fallback:', error.message);
+  process.exit(1);
 }

@@ -1,8 +1,8 @@
-import type { Repository } from "@/types/portfolio"
+import type { Repository } from '@/types/portfolio';
 
 interface OctoMindBannerProps {
-  repos: Repository[]
-  username: string
+  repos: Repository[];
+  username: string;
 }
 
 export default function OctoMindBanner({ repos, username }: OctoMindBannerProps) {
@@ -10,10 +10,12 @@ export default function OctoMindBanner({ repos, username }: OctoMindBannerProps)
     <section className="py-12 bg-white border-b">
       <div className="container mx-auto px-4">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">🚀 OctoMind: Portfólio GitHub Dinâmico</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">
+            🚀 OctoMind: Portfólio GitHub Dinâmico
+          </h2>
           <p className="text-lg text-gray-600 mb-6">
-            Este portfólio é atualizado automaticamente com meus repositórios mais recentes, graças à magia do GitHub
-            Actions!
+            Este portfólio é atualizado automaticamente com meus repositórios mais recentes, graças
+            à magia do GitHub Actions!
           </p>
           <div className="flex flex-wrap justify-center gap-2">
             <a
@@ -48,5 +50,5 @@ export default function OctoMindBanner({ repos, username }: OctoMindBannerProps)
         </div>
       </div>
     </section>
-  )
+  );
 }

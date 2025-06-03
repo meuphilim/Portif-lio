@@ -1,25 +1,25 @@
-"use client"
+'use client';
 
-import { usePortfolioData } from "@/hooks/usePortfolioData"
-import Header from "@/components/Header"
-import LoadingScreen from "@/components/LoadingScreen"
-import HeroSection from "@/components/sections/HeroSection"
-import OctoMindBanner from "@/components/sections/OctoMindBanner"
-import RepositoryStatus from "@/components/sections/RepositoryStatus"
-import ChallengesSection from "@/components/sections/ChallengesSection"
-import ProjectsSection from "@/components/sections/ProjectsSection"
-import LanguagesSection from "@/components/sections/LanguagesSection"
-import SkillsSection from "@/components/sections/SkillsSection"
-import OctoMindSection from "@/components/sections/OctoMindSection"
-import ContactSection from "@/components/sections/ContactSection"
-import Footer from "@/components/Footer"
+import { usePortfolioData } from '@/hooks/usePortfolioData';
+import Header from '@/components/Header';
+import LoadingScreen from '@/components/LoadingScreen';
+import HeroSection from '@/components/sections/HeroSection';
+import OctoMindBanner from '@/components/sections/OctoMindBanner';
+import RepositoryStatus from '@/components/sections/RepositoryStatus';
+import ChallengesSection from '@/components/sections/ChallengesSection';
+import ProjectsSection from '@/components/sections/ProjectsSection';
+import LanguagesSection from '@/components/sections/LanguagesSection';
+import SkillsSection from '@/components/sections/SkillsSection';
+import OctoMindSection from '@/components/sections/OctoMindSection';
+import ContactSection from '@/components/sections/ContactSection';
+import Footer from '@/components/Footer';
 
 export default function Portfolio() {
-  const { repos, loading, error, authStatus, diagnosticInfo } = usePortfolioData()
-  const GITHUB_USERNAME = process.env.NEXT_PUBLIC_GITHUB_USERNAME || "meuphilim"
+  const { repos, loading, error, authStatus, diagnosticInfo } = usePortfolioData();
+  const GITHUB_USERNAME = process.env.NEXT_PUBLIC_GITHUB_USERNAME || 'meuphilim';
 
   if (loading) {
-    return <LoadingScreen diagnosticInfo={diagnosticInfo} />
+    return <LoadingScreen diagnosticInfo={diagnosticInfo} />;
   }
 
   return (
@@ -41,5 +41,5 @@ export default function Portfolio() {
 
       <Footer username={GITHUB_USERNAME} />
     </div>
-  )
+  );
 }

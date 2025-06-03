@@ -1,5 +1,5 @@
 interface ContactSectionProps {
-  username: string
+  username: string;
 }
 
 export default function ContactSection({ username }: ContactSectionProps) {
@@ -14,8 +14,8 @@ export default function ContactSection({ username }: ContactSectionProps) {
             <div className="space-y-6">
               <h3 className="text-2xl font-semibold text-gray-800 mb-6">Entre em Contato</h3>
               <p className="text-gray-600 mb-6">
-                Estou sempre interessado em novas oportunidades e projetos interessantes. Vamos conversar sobre como
-                posso ajudar!
+                Estou sempre interessado em novas oportunidades e projetos interessantes. Vamos
+                conversar sobre como posso ajudar!
               </p>
 
               <div className="space-y-4">
@@ -101,5 +101,5 @@ export default function ContactSection({ username }: ContactSectionProps) {
         </div>
       </div>
     </section>
-  )
+  );
 }

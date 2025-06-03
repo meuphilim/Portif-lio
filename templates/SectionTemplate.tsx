@@ -11,12 +11,12 @@
 
 interface SectionTemplateProps {
   // TODO: Defina as props necessárias para sua seção
-  title?: string
-  data?: any[]
+  title?: string;
+  data?: any[];
   // Adicione outras props conforme necessário
 }
 
-export default function SectionTemplate({ title = "Nova Seção", data = [] }: SectionTemplateProps) {
+export default function SectionTemplate({ title = 'Nova Seção', data = [] }: SectionTemplateProps) {
   return (
     <section
       id="nova-secao" // TODO: Altere o ID para corresponder à sua seção
@@ -41,7 +41,10 @@ export default function SectionTemplate({ title = "Nova Seção", data = [] }: S
           {/* Exemplo de grid para cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {data.map((item, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md p-6 border hover:shadow-lg transition-shadow">
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-md p-6 border hover:shadow-lg transition-shadow"
+              >
                 {/* TODO: Customize o conteúdo do card */}
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Item {index + 1}</h3>
                 <p className="text-gray-600">Conteúdo do item...</p>
@@ -59,7 +62,7 @@ export default function SectionTemplate({ title = "Nova Seção", data = [] }: S
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 /**

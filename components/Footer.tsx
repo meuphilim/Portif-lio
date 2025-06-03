@@ -1,5 +1,5 @@
 interface FooterProps {
-  username: string
+  username: string;
 }
 
 export default function Footer({ username }: FooterProps) {
@@ -9,7 +9,9 @@ export default function Footer({ username }: FooterProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="text-xl font-semibold mb-4">{username}</h3>
-            <p className="text-gray-400">Desenvolvedor Full Stack apaixonado por criar soluções inovadoras.</p>
+            <p className="text-gray-400">
+              Desenvolvedor Full Stack apaixonado por criar soluções inovadoras.
+            </p>
           </div>
 
           <div>
@@ -69,5 +71,5 @@ export default function Footer({ username }: FooterProps) {
         </div>
       </div>
     </footer>
-  )
+  );
 }

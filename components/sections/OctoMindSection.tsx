@@ -25,8 +25,8 @@ export default function OctoMindSection({ authStatus, repoCount }: OctoMindSecti
             <h2 className="text-4xl font-bold text-gray-800">Projeto OctoMind</h2>
           </div>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Sistema inteligente de automação que mantém este portfólio sempre atualizado com os repositórios mais
-            recentes
+            Sistema inteligente de automação que mantém este portfólio sempre atualizado com os
+            repositórios mais recentes
           </p>
         </div>
 
@@ -34,7 +34,7 @@ export default function OctoMindSection({ authStatus, repoCount }: OctoMindSecti
           {/* Cards com estilo consistente */}
           {[
             {
-              title: "⚙️ Como Funciona",
+              title: '⚙️ Como Funciona',
               content: (
                 <>
                   <p className="mb-4 text-gray-600">
@@ -42,28 +42,28 @@ export default function OctoMindSection({ authStatus, repoCount }: OctoMindSecti
                   </p>
                   <ol className="list-decimal list-inside space-y-2 text-gray-700">
                     {[
-                      "Script Node.js coleta dados dos repositórios via API do GitHub",
-                      "GitHub Actions executa o script automaticamente a cada 12 horas",
-                      "Vercel & GitHub Pages fazem deploy automático em múltiplas plataformas",
-                      "Cache Inteligente otimiza requisições e melhora performance"
+                      'Script Node.js coleta dados dos repositórios via API do GitHub',
+                      'GitHub Actions executa o script automaticamente a cada 12 horas',
+                      'Vercel & GitHub Pages fazem deploy automático em múltiplas plataformas',
+                      'Cache Inteligente otimiza requisições e melhora performance',
                     ].map((item, i) => (
                       <li key={i}>{item}</li>
                     ))}
                   </ol>
                 </>
-              )
+              ),
             },
             {
-              title: "🛠️ Tecnologias",
+              title: '🛠️ Tecnologias',
               content: (
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { name: "Node.js", color: "bg-green-500" },
-                    { name: "GitHub Actions", color: "bg-blue-500" },
-                    { name: "GitHub Pages", color: "bg-purple-500" },
-                    { name: "GitHub API", color: "bg-orange-500" },
-                    { name: "Vercel", color: "bg-black" },
-                    { name: "Next.js", color: "bg-blue-600" },
+                    { name: 'Node.js', color: 'bg-green-500' },
+                    { name: 'GitHub Actions', color: 'bg-blue-500' },
+                    { name: 'GitHub Pages', color: 'bg-purple-500' },
+                    { name: 'GitHub API', color: 'bg-orange-500' },
+                    { name: 'Vercel', color: 'bg-black' },
+                    { name: 'Next.js', color: 'bg-blue-600' },
                   ].map((tech) => (
                     <div key={tech.name} className="flex items-center space-x-2">
                       <span className={`w-2 h-2 ${tech.color} rounded-full`}></span>
@@ -71,17 +71,17 @@ export default function OctoMindSection({ authStatus, repoCount }: OctoMindSecti
                     </div>
                   ))}
                 </div>
-              )
+              ),
             },
             {
-              title: "✨ Benefícios",
+              title: '✨ Benefícios',
               content: (
                 <ul className="space-y-2 text-gray-700">
                   {[
-                    "Atualização automática sem intervenção manual",
-                    "Estatísticas sempre precisas e atualizadas",
-                    "Deploy em múltiplas plataformas simultaneamente",
-                    "Fallback inteligente em caso de falhas",
+                    'Atualização automática sem intervenção manual',
+                    'Estatísticas sempre precisas e atualizadas',
+                    'Deploy em múltiplas plataformas simultaneamente',
+                    'Fallback inteligente em caso de falhas',
                   ].map((benefit) => (
                     <li key={benefit} className="flex items-center">
                       <span className="text-green-500 mr-2">✓</span>
@@ -89,34 +89,40 @@ export default function OctoMindSection({ authStatus, repoCount }: OctoMindSecti
                     </li>
                   ))}
                 </ul>
-              )
+              ),
             },
             {
-              title: "📊 Monitoramento",
+              title: '📊 Monitoramento',
               content: (
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700">Status da API</span>
                     <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                      {authStatus === "token" ? "Autenticada" : authStatus === "public" ? "Pública" : "Demonstração"}
+                      {authStatus === 'token'
+                        ? 'Autenticada'
+                        : authStatus === 'public'
+                          ? 'Pública'
+                          : 'Demonstração'}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700">Repositórios</span>
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">{repoCount} ativos</span>
+                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                      {repoCount} ativos
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700">Última atualização</span>
                     <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">
-                      {new Date().toLocaleDateString("pt-BR")}
+                      {new Date().toLocaleDateString('pt-BR')}
                     </span>
                   </div>
                 </div>
-              )
-            }
+              ),
+            },
           ].map((card, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow"
             >
               <h3 className="text-2xl font-semibold mb-4 text-gray-800 flex items-center">
@@ -133,8 +139,8 @@ export default function OctoMindSection({ authStatus, repoCount }: OctoMindSecti
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-8 text-white">
             <h3 className="text-2xl font-bold mb-4">Interessado no OctoMind?</h3>
             <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-              Este sistema pode ser adaptado para automatizar seu próprio portfólio. Confira o código-fonte e
-              documentação completa no GitHub.
+              Este sistema pode ser adaptado para automatizar seu próprio portfólio. Confira o
+              código-fonte e documentação completa no GitHub.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <a
@@ -158,5 +164,5 @@ export default function OctoMindSection({ authStatus, repoCount }: OctoMindSecti
         </div>
       </div>
     </section>
-  )
+  );
 }

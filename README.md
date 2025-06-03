@@ -80,11 +80,11 @@ npm run build  # Build para produção (GitHub Pages)
 
 ### Variáveis de Ambiente
 
-| Variável | Descrição | Obrigatório |
-|----------|-----------|-------------|
-| `GITHUB_USERNAME` | Seu nome de usuário do GitHub | ✅ |
-| `NEXT_PUBLIC_GITHUB_USERNAME` | Nome de usuário público do GitHub | ✅ |
-| `GITHUB_TOKEN` | Token de Acesso Pessoal do GitHub | ⚠️ Recomendado |
+| Variável                      | Descrição                         | Obrigatório    |
+| ----------------------------- | --------------------------------- | -------------- |
+| `GITHUB_USERNAME`             | Seu nome de usuário do GitHub     | ✅             |
+| `NEXT_PUBLIC_GITHUB_USERNAME` | Nome de usuário público do GitHub | ✅             |
+| `GITHUB_TOKEN`                | Token de Acesso Pessoal do GitHub | ⚠️ Recomendado |
 
 ### Secrets do Repositório GitHub
 
@@ -96,7 +96,8 @@ Configure estes nas configurações do seu repositório em **Settings > Secrets 
 ## 🔄 Workflow Automatizado
 
 ### Deploy GitHub Pages (`deploy.yml`)
-- **Gatilhos**: 
+
+- **Gatilhos**:
   - Push para main
   - Pull requests para main
   - A cada 12 horas (agendado)
@@ -231,6 +232,7 @@ Se você encontrar algum problema:
 ## 🎯 Roadmap
 
 ### Próximas Funcionalidades
+
 - [ ] **Tema Escuro**: Implementar alternância entre temas claro e escuro
 - [ ] **Analytics**: Integração com Google Analytics ou Plausible
 - [ ] **Blog**: Seção de blog integrada com markdown
@@ -240,6 +242,7 @@ Se você encontrar algum problema:
 - [ ] **Filtros**: Filtros por linguagem, tópicos e data
 
 ### Melhorias Técnicas
+
 - [ ] **Testes**: Implementar testes unitários e de integração
 - [ ] **Storybook**: Documentação de componentes
 - [ ] **Performance**: Otimizações adicionais de performance
