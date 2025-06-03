@@ -31,7 +31,7 @@ export default function Header({ username, scrollToSection }: HeaderProps) {
           className="flex items-center space-x-3 hover:scale-105 transition-transform duration-300"
         >
           <img 
-            src="/apple-touch-icon.png" 
+            src="/portifolio/apple-touch-icon.png" 
             alt="Logo" 
             className="w-8 h-8 rounded-lg shadow-sm"
           />
