@@ -32,7 +32,8 @@ export default function Portfolio() {
         <ChallengesSection />
         <RepositoryStatus repos={repos} authStatus={authStatus} diagnosticInfo={diagnosticInfo} />
         <ProjectsSection repos={repos} username={GITHUB_USERNAME} />
-        <LanguagesSection repos={repos} />
+        {/* <LanguagesSection repos={repos} /> */}
+        <LanguagesSection username={GITHUB_USERNAME} />
         {/* <SkillsSection /> */}
         <OctoMindSection authStatus={authStatus} repoCount={repos.length} />
         <ContactSection username={GITHUB_USERNAME} />
