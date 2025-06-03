@@ -31,9 +31,9 @@ export default function Portfolio() {
         <OctoMindBanner repos={repos} username={GITHUB_USERNAME} />
         <ChallengesSection />
         <RepositoryStatus repos={repos} authStatus={authStatus} diagnosticInfo={diagnosticInfo} />
-        <LanguagesSection repos={repos} />
         <ProjectsSection repos={repos} username={GITHUB_USERNAME} />
-        <SkillsSection />
+        <LanguagesSection repos={repos} />
+        {/* <SkillsSection /> */}
         <OctoMindSection authStatus={authStatus} repoCount={repos.length} />
         <ContactSection username={GITHUB_USERNAME} />
       </main>

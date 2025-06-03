@@ -11,7 +11,7 @@ export default function RepositoryStatus({ repos, authStatus, diagnosticInfo }: 
     <section className="py-12 bg-gray-50 border-b">
       <div className="container mx-auto px-4">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">Status dos Repositórios</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">📊 Status dos Repositórios</h2>
           <p className="text-lg text-gray-600 mb-6">Explore alguns dos meus trabalhos e contribuições.</p>
           <div className="flex flex-wrap justify-center gap-2 mb-4">
             <img

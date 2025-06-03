@@ -10,7 +10,7 @@ export default function ProjectsSection({ repos, username }: ProjectsSectionProp
   return (
     <section id="projects" className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center text-gray-800 mb-4">🚀 Meus Projetos</h2>
+        <h2 className="text-4xl font-bold text-center text-gray-800 mb-4">🗂️ Meus Projetos</h2>
         <p className="text-xl text-center text-gray-600 mb-12">
           Explore alguns dos meus trabalhos e contribuições de código aberto
         </p>
