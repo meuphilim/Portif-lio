@@ -12,15 +12,13 @@ export default function OctoMindSection({ authStatus, repoCount }: OctoMindSecti
         <div className="text-center mb-12">
           <div className="flex justify-center items-center mb-6">
             <div className="relative w-16 h-16 mr-4">
-              <Image
-                src="/OctoMind.png"
-                alt="OctoMind - Polvo da automação GitHub"
-                width={64}
-                height={64}
-                quality={100}
-                className="object-contain"
-                priority
-              />
+<img 
+  src="/OctoMind.png" 
+  alt="OctoMind - Polvo da automação GitHub"
+  width={64}
+  height={64}
+  className="object-contain"
+/>
             </div>
             <h2 className="text-4xl font-bold text-gray-800">Projeto OctoMind</h2>
           </div>
