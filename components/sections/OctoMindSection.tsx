@@ -14,7 +14,7 @@ export default function OctoMindSection({ authStatus, repoCount }: OctoMindSecti
             <div className="relative w-16 h-16 mr-4">
               <Image
                 src="/OctoMind.png"
-                alt="OctoMind - Polvo inteligente representando automação GitHub"
+                alt="OctoMind - Polvo da automação GitHub"
                 width={64}
                 height={64}
                 quality={100}
